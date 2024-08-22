@@ -1,7 +1,27 @@
-Hello from
- ____        _        
-|  _ \ _   _| | _____ 
-| | | | | | | |/ / _ \
-| |_| | |_| |   <  __/
-|____/ \__,_|_|\_\___|
-
+---
+Welcome to Joe Duck
+---
+---
+Added Todo:
+[T][ ] this by today
+---
+---
+???
+---
+---
+Added Deadline:
+[D][ ] that (by: now)
+---
+---
+1. [T][ ] this by today
+2. [D][ ] that (by: now)
+---
+---
+Added Event:
+[E][ ] event desc from  (from: from to: to)
+---
+---
+1. [T][ ] this by today
+2. [D][ ] that (by: now)
+3. [E][ ] event desc from  (from: from to: to)
+---
