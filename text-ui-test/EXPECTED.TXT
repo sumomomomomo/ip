@@ -6,7 +6,8 @@ Added Todo:
 [T][ ] this by today
 ---
 ---
-???
+Caught a pokemon when joeduck:
+InvalidCommandException: akjslfdjaskfd
 ---
 ---
 Added Deadline:
