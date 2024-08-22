@@ -9,7 +9,7 @@ public class JoeDuck {
     private static final Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
         printResponse(MOTD);
-        List<String> inputs = new ArrayList<>();
+        List<Task> inputs = new ArrayList<>();
 
         while (true) {
             String currInput = scanner.nextLine();
@@ -19,8 +19,32 @@ public class JoeDuck {
             else if (currInput.equals("list")) {
                 printResponse(inputsToString((inputs)));
             }
+            else if (currInput.startsWith("mark ")) {
+                String targetIndexStr = currInput.substring(5);
+                try {
+                    int targetIndex = Integer.parseInt(targetIndexStr) - 1;
+                    Task targetTask = inputs.get(targetIndex);
+                    targetTask.setDoneStatus(true);
+                    printResponse(targetTask.toString());
+                }
+                catch (Exception e) {
+                    printResponse("Caught a pokemon when marking: " + e);
+                }
+            }
+            else if (currInput.startsWith("unmark ")) {
+                String targetIndexStr = currInput.substring(7);
+                try {
+                    int targetIndex = Integer.parseInt(targetIndexStr) - 1;
+                    Task targetTask = inputs.get(targetIndex);
+                    targetTask.setDoneStatus(false);
+                    printResponse(targetTask.toString());
+                }
+                catch (Exception e) {
+                    printResponse("Caught a pokemon when unmarking: " + e);
+                }
+            }
             else {
-                inputs.add(currInput);
+                inputs.add(new Task(currInput));
                 printResponse("Added: " + currInput);
             }
         }
@@ -33,10 +57,10 @@ public class JoeDuck {
         System.out.println(LINE_DIVIDER);
     }
 
-    private static String inputsToString(List<String> list) {
+    private static String inputsToString(List<Task> list) {
         StringBuilder ans = new StringBuilder();
         int count = 1;
-        for (String s : list) {
+        for (Task s : list) {
             ans.append(count).append(". ").append(s);
             if (count < list.size()) {
                 ans.append("\n");
