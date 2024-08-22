@@ -7,15 +7,21 @@ public class JoeDuck {
     private static final Scanner scanner = new Scanner(System.in);
     public static void main(String[] args) {
         printResponse(MOTD);
-//        while (true) {
-//            String userName = scanner.nextLine();  // Read user input
-//            System.out.println("You typed " + userName);  // Output user input
-//        }
+        while (true) {
+            String currInput = scanner.nextLine();  // Read user input
+            if (currInput.equals("bye")) {
+                break;
+            }
+            else {
+                printResponse(currInput);
+            }
+        }
         printResponse(EXIT_MESSAGE);
     }
 
     private static void printResponse(String res) {
         System.out.println(LINE_DIVIDER);
         System.out.println(res);
+        System.out.println(LINE_DIVIDER);
     }
 }
