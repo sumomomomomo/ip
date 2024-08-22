@@ -9,88 +9,85 @@ public class JoeDuck {
     private static final String MOTD = "Welcome to Joe Duck";
     private static final String EXIT_MESSAGE = "Goodbye from Joe Duck";
     private static final Scanner scanner = new Scanner(System.in);
+
     public static void main(String[] args) {
         printResponse(MOTD);
         List<Task> inputs = new ArrayList<>();
 
-        while (true) {
-            // TODO make startsWith equal: some have spaces, some do not
-            // at the end of the string they are checking for
+        while (scanner.hasNextLine()) {
+            // TODO make special errors for every case :DDDD ?
+            // TODO change to enum :DDDD ?
             try {
                 String currInput = scanner.nextLine();
-                if (currInput.equals("bye")) {
+                String currCommand = "";
+                String commandPattern = "([a-zA-Z]+)";
+                Pattern pp = Pattern.compile(commandPattern);
+                Matcher mm = pp.matcher(currInput);
+                if (mm.find()) {
+                    currCommand = mm.group(1);
+                }
+
+                if (currCommand.equals("bye")) {
                     break;
-                } else if (currInput.equals("list")) {
+                } else if (currCommand.equals("list")) {
                     printResponse(inputsToString((inputs)));
-                } else if (currInput.startsWith("mark ")) {
+                } else if (currCommand.equals("mark")) {
                     String targetIndexStr = currInput.substring(5);
-                    try {
-                        int targetIndex = Integer.parseInt(targetIndexStr) - 1;
-                        Task targetTask = inputs.get(targetIndex);
-                        targetTask.setDoneStatus(true);
-                        printResponse(targetTask.toString());
-                    } catch (Exception e) {
-                        printError("mark", e);
-                    }
-                } else if (currInput.startsWith("unmark ")) {
+                    int targetIndex = Integer.parseInt(targetIndexStr) - 1;
+                    Task targetTask = inputs.get(targetIndex);
+                    targetTask.setDoneStatus(true);
+                    printResponse("Marked " + targetTask);
+                } else if (currCommand.equals("unmark")) {
                     String targetIndexStr = currInput.substring(7);
-                    try {
-                        int targetIndex = Integer.parseInt(targetIndexStr) - 1;
-                        Task targetTask = inputs.get(targetIndex);
-                        targetTask.setDoneStatus(false);
-                        printResponse(targetTask.toString());
-                    } catch (Exception e) {
-                        printError("unmark", e);
+                    int targetIndex = Integer.parseInt(targetIndexStr) - 1;
+                    Task targetTask = inputs.get(targetIndex);
+                    targetTask.setDoneStatus(false);
+                    printResponse("Unmarked " + targetTask);
+                } else if (currCommand.equals("delete")) {
+                    String targetIndexStr = currInput.substring(7);
+                    int targetIndex = Integer.parseInt(targetIndexStr) - 1;
+                    Task targetTask = inputs.get(targetIndex);
+                    inputs.remove(targetTask);
+                    printResponse("Removed " + targetTask);
+                } else if (currCommand.equals("todo")) { // buggy
+                    if (currInput.trim().length() <= 4) {
+                        throw new EmptyTodoException("Your todoing description is empty, you buffoon");
                     }
-                } else if (currInput.startsWith("todo")) {
-                    try {
-                        if (currInput.length() <= 5) {
-                            throw new EmptyTodoException("Your todoing description is empty, you buffoon");
-                        }
-                        String todoString = currInput.substring(5);
-                        Todo t = new Todo(todoString);
-                        inputs.add(t);
-                        printResponse("Added Todo:\n" + t);
-                    } catch (Exception e) {
-                        printError("todo", e);
-                    }
-                } else if (currInput.startsWith("deadline ")) {
+                    String todoString = currInput.substring(5);
+                    Todo t = new Todo(todoString);
+                    inputs.add(t);
+                    printResponse("Added Todo:\n" + t);
+
+                } else if (currCommand.equals("deadline")) {
                     String deadlineString = currInput.substring(9);
                     String pattern = "(.+) \\/by (.+)";
-                    try {
-                        Pattern p = Pattern.compile(pattern);
-                        Matcher m = p.matcher(deadlineString);
-                        m.find(); //TODO fix another day
-                        String desc = m.group(1);
-                        String deadlineDate = m.group(2);
-                        Deadline d = new Deadline(desc, deadlineDate);
-                        inputs.add(d);
-                        printResponse("Added Deadline:\n" + d);
-                    } catch (Exception e) {
-                        printError("deadline", e);
-                    }
-                } else if (currInput.startsWith("event ")) {
+                    Pattern p = Pattern.compile(pattern);
+                    Matcher m = p.matcher(deadlineString);
+                    m.find(); //TODO fix another day
+                    String desc = m.group(1);
+                    String deadlineDate = m.group(2);
+                    Deadline d = new Deadline(desc, deadlineDate);
+                    inputs.add(d);
+                    printResponse("Added Deadline:\n" + d);
+                } else if (currCommand.equals("event")) {
                     String deadlineString = currInput.substring(6);
                     String pattern = "(.+)\\/from (.+) \\/to (.+)";
-                    try {
-                        Pattern p = Pattern.compile(pattern);
-                        Matcher m = p.matcher(deadlineString);
-                        m.find(); //TODO fix another day
-                        String desc = m.group(1);
-                        String eventStartDate = m.group(2);
-                        String eventEndDate = m.group(3);
-                        Event e = new Event(desc, eventStartDate, eventEndDate);
-                        inputs.add(e);
-                        printResponse("Added Event:\n" + e);
-                    } catch (Exception e) {
-                        printError("event", e);
-                    }
+                    Pattern p = Pattern.compile(pattern);
+                    Matcher m = p.matcher(deadlineString);
+                    m.find(); //TODO fix another day
+                    String desc = m.group(1);
+                    String eventStartDate = m.group(2);
+                    String eventEndDate = m.group(3);
+                    Event e = new Event(desc, eventStartDate, eventEndDate);
+                    inputs.add(e);
+                    printResponse("Added Event:\n" + e);
                 } else {
                     throw new InvalidCommandException(currInput);
                 }
-            }
-            catch (JoeDuckException de) {
+            } catch (JoeDuckException de) {
                 printError("joeduck", de);
+            } catch (Exception e) {
+                printError(e);
             }
         }
         printResponse(EXIT_MESSAGE);
@@ -103,7 +100,11 @@ public class JoeDuck {
     }
 
     private static void printError(String desc, Exception e) {
-        printResponse("Caught a pokemon when " + desc + ":\n" + e);
+        printResponse("Caught a " + desc + " pokemon:\n" + e);
+    }
+
+    private static void printError(Exception e) {
+        printResponse("Caught an unknown pokemon:\n" + e);
     }
 
     private static String inputsToString(List<Task> list) {

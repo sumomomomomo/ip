@@ -1,6 +1,10 @@
 todo this by today
 akjslfdjaskfd
+todo
+todo 
 deadline that /by now
 list
 event event desc from /from from /to to
+list
+delete 1
 list

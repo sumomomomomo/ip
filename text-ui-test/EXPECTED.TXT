@@ -6,8 +6,16 @@ Added Todo:
 [T][ ] this by today
 ---
 ---
-Caught a pokemon when joeduck:
+Caught a joeduck pokemon:
 InvalidCommandException: akjslfdjaskfd
+---
+---
+Caught a joeduck pokemon:
+EmptyTodoException: Your todoing description is empty, you buffoon
+---
+---
+Caught a joeduck pokemon:
+EmptyTodoException: Your todoing description is empty, you buffoon
 ---
 ---
 Added Deadline:
@@ -25,4 +33,14 @@ Added Event:
 1. [T][ ] this by today
 2. [D][ ] that (by: now)
 3. [E][ ] event desc from  (from: from to: to)
+---
+---
+Removed [T][ ] this by today
+---
+---
+1. [D][ ] that (by: now)
+2. [E][ ] event desc from  (from: from to: to)
+---
+---
+Goodbye from Joe Duck
 ---
