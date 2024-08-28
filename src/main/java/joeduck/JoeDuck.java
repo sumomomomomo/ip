@@ -72,6 +72,11 @@ public class JoeDuck {
                     storage.writeList(tasks.getTaskList());
                     break;
                 }
+                case "find": {
+                    String keyword = currCommand.getArgs();
+                    ui.printResponse(tasks.findTask(keyword));
+                    break;
+                }
                 case "todo":
                     String todoString = currCommand.getArgs();
                     if (todoString.isEmpty()) {
