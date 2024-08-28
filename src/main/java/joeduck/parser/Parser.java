@@ -3,9 +3,6 @@ package joeduck.parser;
 import joeduck.command.Command;
 import joeduck.exception.InvalidCommandException;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -23,7 +20,7 @@ public class Parser {
             }
             return new Command(currCommand, args);
         } else {
-            throw new InvalidCommandException("Could not parse!");
+            throw new InvalidCommandException("Invalid command!");
         }
     }
 }
