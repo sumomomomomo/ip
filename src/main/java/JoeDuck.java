@@ -25,7 +25,7 @@ public class JoeDuck {
 
         // try and find saved data
         // TODO refactor regex so compile isn't spammed everywhere
-        // TODO add error handling for invalid save files?
+        // TODO add error handling for invalid save files
         String homePath = System.getProperty("user.home");
         Path dataFolderPath = Paths.get(homePath, "ip_data");
         if (!Files.exists(dataFolderPath)) {
