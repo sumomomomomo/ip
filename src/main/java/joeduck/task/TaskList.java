@@ -1,6 +1,8 @@
 package joeduck.task;
 
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Handles adding/removing of tasks to an internal List of Task.
@@ -48,6 +50,24 @@ public class TaskList {
      */
     public void removeTask(int index) {
         tasks.remove(index);
+    }
+
+    /**
+     * Returns a String of all tasks that match a given String keyword.
+     * @param keyword Keyword to search.
+     * @return String of each task, prepended with index, separated by newline.
+     */
+    public String findTask(String keyword) {
+        Pattern p = Pattern.compile("(" + keyword + ")");
+        StringBuilder ans = new StringBuilder();
+        for (int i = 0; i < tasks.size(); i++) {
+            Task currTask = tasks.get(i);
+            Matcher m = p.matcher(currTask.toString());
+            if (m.find()) {
+                ans.append(i + 1).append(". ").append(currTask).append("\n");
+            }
+        }
+        return ans.toString().trim();
     }
 
     /**
