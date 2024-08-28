@@ -11,6 +11,10 @@ import java.nio.file.Files;
 import java.io.File;
 import java.io.IOException;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
+
 public class JoeDuck {
     private static final String LINE_DIVIDER = "---";
     private static final String LOAD_REGEX_PATTERN = "^\\[(.)]\\[([ |X])] (.+)$";
@@ -211,11 +215,11 @@ public class JoeDuck {
         printResponse("Caught an unknown pokemon:\n" + e);
     }
 
-    private static String inputsToString(List<Task> list, boolean prependIndex) {
+    private static String inputsToString(List<Task> list, boolean forWriting) {
         StringBuilder ans = new StringBuilder();
         int count = 1;
         for (Task s : list) {
-            if (prependIndex) {
+            if (forWriting) {
                 ans.append(count).append(". ");
             }
             ans.append(s);
