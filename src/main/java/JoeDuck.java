@@ -18,263 +18,139 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class JoeDuck {
-    private static final String LINE_DIVIDER = "---";
-    private static final String LOAD_REGEX_PATTERN = "^\\[(.)]\\[([ |X])] (.+)$";
-    private static final String MOTD = "Welcome to Joe Duck";
-    private static final String EXIT_MESSAGE = "Goodbye from Joe Duck";
-    private static final Scanner scanner = new Scanner(System.in);
+    private final Ui ui;
+    private Storage storage;
+    private TaskList tasks;
+    private final Parser parser;
 
-    public static void main(String[] args) {
-        List<Task> inputs = new ArrayList<>();
-
-        printResponse(MOTD);
-
-        // try and find saved data
-        // TODO refactor regex so compile isn't spammed everywhere
-        // TODO add error handling for invalid save files
-        String homePath = System.getProperty("user.home");
-        Path dataFolderPath = Paths.get(homePath, "ip_data");
-        if (!Files.exists(dataFolderPath)) {
-            dataFolderPath.toFile().mkdirs();
-            printResponse("Folder " + dataFolderPath + " created.");
+    private JoeDuck() {
+        ui = new Ui();
+        storage = new Storage();
+        parser = new Parser();
+        try {
+            tasks = new TaskList();
+            tasks.setTaskList(storage.getTasksFromFile());
+        } catch (StorageLoadException e) {
+            // cry
+            throw new RuntimeException(e);
         }
-        Path dataFilePath = Paths.get(homePath, "ip_data", "tasks.txt");
-        if (Files.exists(dataFilePath)) {
-            printResponse("tasks.json found!");
-            // load saved data
-            try {
-                Scanner s = new Scanner(dataFilePath.toFile());
-                Pattern p = Pattern.compile(LOAD_REGEX_PATTERN);
-                while (s.hasNextLine()) {
-                    String currLine = s.nextLine().trim();
-                    Matcher m = p.matcher(currLine);
-                    m.find();
+    }
 
-                    String type = m.group(1);
-                    String done = m.group(2);
-                    boolean doneStatus = done.equals(Task.DONE_ICON);
-                    String descAndMisc = m.group(3);
-
-                    switch (type) {
-                        case "T":
-                            Todo currTodo = new Todo(descAndMisc);
-                            currTodo.setDoneStatus(doneStatus);
-                            inputs.add(currTodo);
-                            break;
-                        case "D":
-                            Pattern pd = Pattern.compile(Deadline.DESC_REGEX_PATTERN);
-                            Matcher md = pd.matcher(descAndMisc);
-                            md.find();
-
-                            String desc = md.group(1);
-                            String date = md.group(2);
-                            LocalDate localDate = LocalDate.parse(date);
-                            String time = md.group(3);
-                            LocalTime localTime = LocalTime.parse(time);
-                            LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
-
-                            Deadline currDeadline = new Deadline(desc, localDateTime);
-                            currDeadline.setDoneStatus(doneStatus);
-                            inputs.add(currDeadline);
-                            break;
-                        case "E":
-                            Pattern pe = Pattern.compile(Event.DESC_REGEX_PATTERN);
-                            Matcher me = pe.matcher(descAndMisc);
-                            me.find();
-
-                            String descE = me.group(1);
-                            String startDate = me.group(2);
-                            LocalDate d1 = LocalDate.parse(startDate);
-                            String startTime = me.group(3);
-                            LocalTime t1 = LocalTime.parse(startTime);
-                            String endDate = me.group(4);
-                            LocalDate d2 = LocalDate.parse(endDate);
-                            String endTime = me.group(5);
-                            LocalTime t2 = LocalTime.parse(endTime);
-
-                            LocalDateTime startDt = LocalDateTime.of(d1, t1);
-                            LocalDateTime endDt = LocalDateTime.of(d2, t2);
-
-                            Event currEvent = new Event(descE, startDt, endDt);
-                            currEvent.setDoneStatus(doneStatus);
-                            inputs.add(currEvent);
-                            break;
-                    }
-
-                }
-                s.close();
-                printResponse("Tasks loaded successfully.");
-            } catch (FileNotFoundException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
-            try {
-                dataFilePath.toFile().createNewFile();
-                printResponse("File " + dataFilePath + " created.");
-            } catch (IOException e) {
-                System.out.println("Exception: " + e);
-                return;
-            }
-        }
+    private void run() {
+        ui.onStart();
         boolean endSession = false;
-        // main loop
-        while (scanner.hasNextLine()) {
-            // TODO make special errors for every case :DDDD ?
+        while (ui.scannerHasNextLine()) {
             try {
-                String currInput = scanner.nextLine().trim();
-                String currCommand = "";
-                String commandPattern = "([a-zA-Z]+)";
-                Pattern pp = Pattern.compile(commandPattern);
-                Matcher mm = pp.matcher(currInput);
-                if (mm.find()) {
-                    currCommand = mm.group(1);
-                }
-
-                switch (currCommand) {
-                    case "bye":
+                Command currCommand = parser.parseUserInput(ui.scannerNextLine());
+                switch (currCommand.getCommand()) {
+                    case "bye", "exit":
                         endSession = true;
                         break;
                     case "list":
-                        printResponse(inputsToString(inputs, true));
-                        break;
-                    case "write":
-                        printResponse("Forced a write to file.");
-                        writeList(inputs, dataFilePath);
+                        ui.printResponse(Utils.inputsToString(tasks.getTaskList(), true));
                         break;
                     case "mark": {
-                        String targetIndexStr = currInput.substring(5);
+                        String targetIndexStr = currCommand.getArgs();
                         int targetIndex = Integer.parseInt(targetIndexStr) - 1;
-                        Task targetTask = inputs.get(targetIndex);
+                        Task targetTask = tasks.getTask(targetIndex);
                         targetTask.setDoneStatus(true);
-                        printResponse("Marked " + targetTask);
-                        writeList(inputs, dataFilePath);
+                        ui.printResponse("Marked " + targetTask);
+                        storage.writeList(tasks.getTaskList());
                         break;
                     }
                     case "unmark": {
-                        String targetIndexStr = currInput.substring(7);
+                        String targetIndexStr = currCommand.getArgs();
                         int targetIndex = Integer.parseInt(targetIndexStr) - 1;
-                        Task targetTask = inputs.get(targetIndex);
+                        Task targetTask = tasks.getTask(targetIndex);
                         targetTask.setDoneStatus(false);
-                        printResponse("Unmarked " + targetTask);
-                        writeList(inputs, dataFilePath);
+                        ui.printResponse("Unmarked " + targetTask);
+                        storage.writeList(tasks.getTaskList());
                         break;
                     }
-                    case "delete": {
-                        String targetIndexStr = currInput.substring(7);
+                    case "delete", "remove": {
+                        String targetIndexStr = currCommand.getArgs();
                         int targetIndex = Integer.parseInt(targetIndexStr) - 1;
-                        Task targetTask = inputs.get(targetIndex);
-                        inputs.remove(targetTask);
-                        printResponse("Removed " + targetTask);
-                        writeList(inputs, dataFilePath);
+                        Task targetTask = tasks.getTask(targetIndex);
+                        tasks.removeTask(targetIndex);
+                        ui.printResponse("Removed " + targetTask);
+                        storage.writeList(tasks.getTaskList());
                         break;
                     }
-                    case "todo":  // buggy
-                        if (currInput.trim().length() <= 4) {
-                            throw new EmptyTodoException("Your todoing description is empty, you buffoon");
-                        }
-                        String todoString = currInput.substring(5);
+                    case "todo":
+                        String todoString = currCommand.getArgs();
                         Todo t = new Todo(todoString);
-                        inputs.add(t);
-                        printResponse("Added Todo:\n" + t);
-                        writeList(inputs, dataFilePath);
+                        tasks.addTask(t);
+                        ui.printResponse("Added Todo:\n" + t);
+                        storage.writeList(tasks.getTaskList());
                         break;
                     case "deadline": {
-                        String deadlineString = currInput.substring(9);
+                        String deadlineString = currCommand.getArgs();
                         String pattern = "(.+) /by (\\d{4}-\\d{2}-\\d{2}+) (\\d{2}:\\d{2})";
-                        Pattern p = Pattern.compile(pattern);
-                        Matcher m = p.matcher(deadlineString);
-                        m.find();
+                        Pattern pd = Pattern.compile(pattern);
+                        Matcher md = pd.matcher(deadlineString);
+                        if (!md.find()) {
+                            throw new RegexMatchFailureException("Arguments for creating deadline is incorrect");
+                        }
 
-                        String desc = m.group(1);
-                        String date = m.group(2);
+                        String desc = md.group(1);
+                        String date = md.group(2);
                         LocalDate localDate = LocalDate.parse(date);
 
-                        String time = m.group(3);
+                        String time = md.group(3);
                         LocalTime localTime = LocalTime.parse(time);
                         LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
 
                         Deadline d = new Deadline(desc, localDateTime);
-                        inputs.add(d);
-                        printResponse("Added Deadline:\n" + d);
-                        writeList(inputs, dataFilePath);
+                        tasks.addTask(d);
+                        ui.printResponse("Added Deadline:\n" + d);
+                        storage.writeList(tasks.getTaskList());
                         break;
                     }
                     case "event": {
-                        String deadlineString = currInput.substring(6);
+                        String deadlineString = currCommand.getArgs();
                         String pattern = "(.+) /from (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}) " +
                                 "/to (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2})";
-                        Pattern p = Pattern.compile(pattern);
-                        Matcher m = p.matcher(deadlineString);
-                        m.find();
+                        Pattern pe = Pattern.compile(pattern);
+                        Matcher me = pe.matcher(deadlineString);
+                        if (!me.find()) {
+                            throw new RegexMatchFailureException("Arguments for creating event is incorrect");
+                        }
 
-                        String desc = m.group(1);
-                        String startDate = m.group(2);
+                        String desc = me.group(1);
+                        String startDate = me.group(2);
                         LocalDate d1 = LocalDate.parse(startDate);
-                        String startTime = m.group(3);
+                        String startTime = me.group(3);
                         LocalTime t1 = LocalTime.parse(startTime);
-                        String endDate = m.group(4);
+                        String endDate = me.group(4);
                         LocalDate d2 = LocalDate.parse(endDate);
-                        String endTime = m.group(5);
+                        String endTime = me.group(5);
                         LocalTime t2 = LocalTime.parse(endTime);
 
                         LocalDateTime startDt = LocalDateTime.of(d1, t1);
                         LocalDateTime endDt = LocalDateTime.of(d2, t2);
                         Event e = new Event(desc, startDt, endDt);
-                        inputs.add(e);
-                        printResponse("Added Event:\n" + e);
-                        writeList(inputs, dataFilePath);
+                        tasks.addTask(e);
+                        ui.printResponse("Added Event:\n" + e);
+                        storage.writeList(tasks.getTaskList());
                         break;
                     }
                     default:
-                        throw new InvalidCommandException(currInput);
+                        throw new InvalidCommandException("Invalid command!");
                 }
-            } catch (JoeDuckException de) {
-                printError("joeduck", de);
-            } catch (Exception e) {
-                printError(e);
+            } catch (JoeDuckException e) {
+                ui.printError(e.getMessage());
+            } catch (FileNotFoundException e) {
+                throw new RuntimeException(e);
             }
 
             if (endSession) {
                 break;
             }
         }
-        printResponse(EXIT_MESSAGE);
+        ui.onExit();
     }
 
-    private static void printResponse(String res) {
-        System.out.println(LINE_DIVIDER);
-        System.out.println(res);
-        System.out.println(LINE_DIVIDER);
-    }
-
-    private static void printError(String desc, Exception e) {
-        printResponse("Caught a " + desc + " pokemon:\n" + e);
-    }
-
-    private static void printError(Exception e) {
-        printResponse("Caught an unknown pokemon:\n" + e);
-    }
-
-    private static String inputsToString(List<Task> list, boolean forPrinting) {
-        StringBuilder ans = new StringBuilder();
-        int count = 1;
-        for (Task s : list) {
-            if (forPrinting) {
-                ans.append(count).append(". ").append(s.toString());
-            } else {
-                ans.append(s.toStringWrite());
-            }
-            if (count < list.size()) {
-                ans.append("\n");
-            }
-            count++;
-        }
-        return ans.toString();
-    }
-
-    private static void writeList(List<Task> list, Path dataFilePath) throws FileNotFoundException {
-        try (PrintWriter out = new PrintWriter(dataFilePath.toString())) {
-            out.println(inputsToString(list, false));
-        }
+    public static void main(String[] args) {
+        new JoeDuck().run();
     }
 }
