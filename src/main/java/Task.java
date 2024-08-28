@@ -1,4 +1,5 @@
 public abstract class Task {
+    protected static final String DONE_ICON = "X";
     protected String description;
     protected boolean isDone;
 
@@ -12,7 +13,7 @@ public abstract class Task {
     }
 
     public String getStatusIcon() {
-        return (isDone ? "X" : " ");
+        return (isDone ? DONE_ICON : " ");
     }
 
     @Override
