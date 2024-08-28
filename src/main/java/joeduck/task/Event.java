@@ -1,7 +1,5 @@
 package joeduck.task;
 
-import joeduck.task.Task;
-
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -13,11 +11,13 @@ public class Event extends Task {
     private final LocalDateTime endDate;
     public static final String DESC_REGEX_PATTERN = "(.+) \\(from: (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}) " +
             "to: (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2})\\)";
+
     public Event(String description, LocalDateTime startDate, LocalDateTime endDate) {
         super(description);
         this.startDate = startDate;
         this.endDate = endDate;
     }
+
     @Override
     public String toString() {
         return "[E]" + super.toString() + " (from: " +
