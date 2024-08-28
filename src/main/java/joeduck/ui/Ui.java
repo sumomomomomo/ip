@@ -7,10 +7,17 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Handles user input/output.
+ */
 public class Ui {
     private static final String LINE_DIVIDER = "---";
     private static final String MOTD = "Welcome to Joe Duck";
     private static final String EXIT_MESSAGE = "Goodbye from Joe Duck";
+
+    /**
+     * Scanner to be used with Singleton Ui instance in JoeDuck.
+     */
     public final Scanner scanner = new Scanner(System.in);
 
     public void printResponse(String res) {

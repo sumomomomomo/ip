@@ -25,6 +25,9 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Handles I/O to a file for persistence of the list of tasks.
+ */
 public class Storage {
     private static final String FILE_NAME = "ip_data";
     private static final String LOAD_REGEX_PATTERN = "^\\[(.)]\\[([ |X])] (.+)$";
@@ -39,7 +42,14 @@ public class Storage {
         loadRegexPattern = Pattern.compile(LOAD_REGEX_PATTERN);
     }
 
-    // made public for unit testing
+    /**
+     * Parses a single line from tasks.txt, and returns the Task it represents.
+     * Made public for easier testing.
+     * @param currLine String of the single line.
+     * @return The Task it represents. Currently, they are: Todo, Deadline, Event
+     * @throws InvalidTaskTypeException Thrown when the line's task type is unrecognized.
+     * @throws RegexMatchFailureException Thrown when regex fails when parsing Deadline or Event.
+     */
     public Task getTaskFromLine(String currLine) throws InvalidTaskTypeException, RegexMatchFailureException {
         // TODO make some kind of class to hold regex patterns
         Matcher m = loadRegexPattern.matcher(currLine);
@@ -101,6 +111,12 @@ public class Storage {
         throw new InvalidTaskTypeException("Unrecognized task type: " + type);
     }
 
+    /**
+     * Reads tasks.txt, and returns a List of the tasks contained inside.
+     * If tasks.txt does not exist, creates it and necessary directories.
+     * @return A List of Task.
+     * @throws StorageLoadException Thrown when tasks.txt does not exist, and creation fails.
+     */
     public List<Task> getTasksFromFile() throws StorageLoadException {
         List<Task> inputs = new ArrayList<>();
         if (!Files.exists(dataFolderPath)) {
@@ -132,6 +148,11 @@ public class Storage {
         return inputs;
     }
 
+    /**
+     * Overrides tasks.txt with a given List of Task.
+     * @param list List of Task to override tasks.txt with.
+     * @throws FileNotFoundException Thrown when tasks.txt is not found.
+     */
     public void writeList(List<Task> list) throws FileNotFoundException {
         try (PrintWriter out = new PrintWriter(dataFilePath.toString())) {
             out.println(Utils.inputsToString(list, false));
