@@ -1,6 +1,5 @@
 package joeduck.storage;
 
-import joeduck.exception.EmptyTodoException;
 import joeduck.exception.InvalidTaskTypeException;
 import joeduck.exception.RegexMatchFailureException;
 import joeduck.exception.StorageLoadException;
@@ -59,46 +58,54 @@ public class Storage {
                 return currTodo;
             case "D":
                 Pattern pd = Pattern.compile(Deadline.DESC_REGEX_PATTERN);
-                Matcher md = pd.matcher(descAndMisc);
-                if (!md.find()) {
-                    throw new RegexMatchFailureException("Error while parsing deadline: " + descAndMisc);
-                }
-
-                String desc = md.group(1);
-                String date = md.group(2);
-                LocalDate localDate = LocalDate.parse(date);
-                String time = md.group(3);
-                LocalTime localTime = LocalTime.parse(time);
-                LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
-
-                Deadline currDeadline = new Deadline(desc, localDateTime);
-                currDeadline.setDoneStatus(doneStatus);
-                return currDeadline;
+                return getDeadline(pd, descAndMisc, doneStatus);
             case "E":
                 Pattern pe = Pattern.compile(Event.DESC_REGEX_PATTERN);
-                Matcher me = pe.matcher(descAndMisc);
-                if (!me.find()) {
-                    throw new RegexMatchFailureException("Error while parsing event: " + descAndMisc);
-                }
-
-                String descE = me.group(1);
-                String startDate = me.group(2);
-                LocalDate d1 = LocalDate.parse(startDate);
-                String startTime = me.group(3);
-                LocalTime t1 = LocalTime.parse(startTime);
-                String endDate = me.group(4);
-                LocalDate d2 = LocalDate.parse(endDate);
-                String endTime = me.group(5);
-                LocalTime t2 = LocalTime.parse(endTime);
-
-                LocalDateTime startDt = LocalDateTime.of(d1, t1);
-                LocalDateTime endDt = LocalDateTime.of(d2, t2);
-
-                Event currEvent = new Event(descE, startDt, endDt);
-                currEvent.setDoneStatus(doneStatus);
-                return currEvent;
+                return getEvent(pe, descAndMisc, doneStatus);
         }
         throw new InvalidTaskTypeException("Unrecognized task type: " + type);
+    }
+
+    private static Deadline getDeadline(Pattern pd, String descAndMisc, boolean doneStatus) throws RegexMatchFailureException {
+        Matcher md = pd.matcher(descAndMisc);
+        if (!md.find()) {
+            throw new RegexMatchFailureException("Error while parsing deadline: " + descAndMisc);
+        }
+
+        String desc = md.group(1);
+        String date = md.group(2);
+        LocalDate localDate = LocalDate.parse(date);
+        String time = md.group(3);
+        LocalTime localTime = LocalTime.parse(time);
+        LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
+
+        Deadline currDeadline = new Deadline(desc, localDateTime);
+        currDeadline.setDoneStatus(doneStatus);
+        return currDeadline;
+    }
+
+    private static Event getEvent(Pattern pe, String descAndMisc, boolean doneStatus) throws RegexMatchFailureException {
+        Matcher me = pe.matcher(descAndMisc);
+        if (!me.find()) {
+            throw new RegexMatchFailureException("Error while parsing event: " + descAndMisc);
+        }
+
+        String descE = me.group(1);
+        String startDate = me.group(2);
+        LocalDate d1 = LocalDate.parse(startDate);
+        String startTime = me.group(3);
+        LocalTime t1 = LocalTime.parse(startTime);
+        String endDate = me.group(4);
+        LocalDate d2 = LocalDate.parse(endDate);
+        String endTime = me.group(5);
+        LocalTime t2 = LocalTime.parse(endTime);
+
+        LocalDateTime startDt = LocalDateTime.of(d1, t1);
+        LocalDateTime endDt = LocalDateTime.of(d2, t2);
+
+        Event currEvent = new Event(descE, startDt, endDt);
+        currEvent.setDoneStatus(doneStatus);
+        return currEvent;
     }
 
     public List<Task> getTasksFromFile() throws StorageLoadException {
@@ -113,7 +120,7 @@ public class Storage {
                 while (s.hasNextLine()) {
                     String currLine = s.nextLine().trim();
                     inputs.add(getTaskFromLine(currLine));
-                    }
+                }
                 s.close();
             } catch (FileNotFoundException | InvalidTaskTypeException |
                      RegexMatchFailureException e) {

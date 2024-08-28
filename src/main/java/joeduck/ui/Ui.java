@@ -1,11 +1,6 @@
 package joeduck.ui;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.Scanner;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class Ui {
     private static final String LINE_DIVIDER = "---";

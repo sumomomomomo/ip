@@ -8,6 +8,7 @@ import java.util.regex.Pattern;
 
 public class Parser {
     private final static Pattern COMMAND_PATTERN = Pattern.compile("([a-zA-Z]+)");
+
     public Command parseUserInput(String input) throws InvalidCommandException {
         String currInput = input.trim();
         String currCommand = "";

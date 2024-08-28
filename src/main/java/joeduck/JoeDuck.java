@@ -5,18 +5,18 @@ import joeduck.exception.InvalidCommandException;
 import joeduck.exception.JoeDuckException;
 import joeduck.exception.RegexMatchFailureException;
 import joeduck.exception.StorageLoadException;
+import joeduck.parser.Parser;
 import joeduck.storage.Storage;
 import joeduck.task.*;
-import joeduck.parser.Parser;
 import joeduck.ui.Ui;
 import joeduck.utils.Utils;
 
 import java.io.FileNotFoundException;
 import java.time.LocalDate;
-import java.time.LocalTime;
-import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class JoeDuck {
     private final Ui ui;
@@ -86,20 +86,7 @@ public class JoeDuck {
                     String deadlineString = currCommand.getArgs();
                     String pattern = "(.+) /by (\\d{4}-\\d{2}-\\d{2}+) (\\d{2}:\\d{2})";
                     Pattern pd = Pattern.compile(pattern);
-                    Matcher md = pd.matcher(deadlineString);
-                    if (!md.find()) {
-                        throw new RegexMatchFailureException("Arguments for creating deadline is incorrect");
-                    }
-
-                    String desc = md.group(1);
-                    String date = md.group(2);
-                    LocalDate localDate = LocalDate.parse(date);
-
-                    String time = md.group(3);
-                    LocalTime localTime = LocalTime.parse(time);
-                    LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
-
-                    Deadline d = new Deadline(desc, localDateTime);
+                    Deadline d = getDeadline(pd, deadlineString);
                     tasks.addTask(d);
                     ui.printResponse("Added Deadline:\n" + d);
                     storage.writeList(tasks.getTaskList());
@@ -110,24 +97,7 @@ public class JoeDuck {
                     String pattern = "(.+) /from (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}) " +
                             "/to (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2})";
                     Pattern pe = Pattern.compile(pattern);
-                    Matcher me = pe.matcher(deadlineString);
-                    if (!me.find()) {
-                        throw new RegexMatchFailureException("Arguments for creating event is incorrect");
-                    }
-
-                    String desc = me.group(1);
-                    String startDate = me.group(2);
-                    LocalDate d1 = LocalDate.parse(startDate);
-                    String startTime = me.group(3);
-                    LocalTime t1 = LocalTime.parse(startTime);
-                    String endDate = me.group(4);
-                    LocalDate d2 = LocalDate.parse(endDate);
-                    String endTime = me.group(5);
-                    LocalTime t2 = LocalTime.parse(endTime);
-
-                    LocalDateTime startDt = LocalDateTime.of(d1, t1);
-                    LocalDateTime endDt = LocalDateTime.of(d2, t2);
-                    Event e = new Event(desc, startDt, endDt);
+                    Event e = getEvent(pe, deadlineString);
                     tasks.addTask(e);
                     ui.printResponse("Added Event:\n" + e);
                     storage.writeList(tasks.getTaskList());
@@ -142,6 +112,46 @@ public class JoeDuck {
             throw new RuntimeException(e);
         }
         return false;
+    }
+
+    private static Event getEvent(Pattern pe, String deadlineString) throws RegexMatchFailureException {
+        Matcher me = pe.matcher(deadlineString);
+        if (!me.find()) {
+            throw new RegexMatchFailureException("Arguments for creating event is incorrect");
+        }
+
+        String desc = me.group(1);
+        String startDate = me.group(2);
+        LocalDate d1 = LocalDate.parse(startDate);
+        String startTime = me.group(3);
+        LocalTime t1 = LocalTime.parse(startTime);
+        String endDate = me.group(4);
+        LocalDate d2 = LocalDate.parse(endDate);
+        String endTime = me.group(5);
+        LocalTime t2 = LocalTime.parse(endTime);
+
+        LocalDateTime startDt = LocalDateTime.of(d1, t1);
+        LocalDateTime endDt = LocalDateTime.of(d2, t2);
+        Event e = new Event(desc, startDt, endDt);
+        return e;
+    }
+
+    private static Deadline getDeadline(Pattern pd, String deadlineString) throws RegexMatchFailureException {
+        Matcher md = pd.matcher(deadlineString);
+        if (!md.find()) {
+            throw new RegexMatchFailureException("Arguments for creating deadline is incorrect");
+        }
+
+        String desc = md.group(1);
+        String date = md.group(2);
+        LocalDate localDate = LocalDate.parse(date);
+
+        String time = md.group(3);
+        LocalTime localTime = LocalTime.parse(time);
+        LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
+
+        Deadline d = new Deadline(desc, localDateTime);
+        return d;
     }
 
     private void run() {
