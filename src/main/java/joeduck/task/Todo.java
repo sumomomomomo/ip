@@ -2,6 +2,9 @@ package joeduck.task;
 
 import joeduck.task.Task;
 
+/**
+ * Represents a task with no fixed deadline or associated time period.
+ */
 public class Todo extends Task {
     public Todo(String description) {
         super(description);
@@ -10,7 +13,6 @@ public class Todo extends Task {
     public String toString() {
         return "[T]" + super.toString();
     }
-
     public String toStringWrite() {
         return toString();
     }

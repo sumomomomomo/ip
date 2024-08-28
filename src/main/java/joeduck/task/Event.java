@@ -5,6 +5,9 @@ import joeduck.task.Task;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Represents a task that takes place within a certain period of time.
+ */
 public class Event extends Task {
     private final LocalDateTime startDate;
     private final LocalDateTime endDate;

@@ -18,6 +18,9 @@ import java.util.regex.Pattern;
 import java.util.regex.Matcher;
 import java.time.LocalDateTime;
 
+/**
+ * Main class. Interactive chatbot.
+ */
 public class JoeDuck {
     private final Ui ui;
     private final Storage storage;
@@ -39,14 +42,14 @@ public class JoeDuck {
 
     private boolean executeCommand(Command currCommand) {
         try {
-            switch (currCommand.getCommand()) {
+            switch (currCommand.command()) {
                 case "bye", "exit":
                     return true;
                 case "list":
                     ui.printResponse(Utils.inputsToString(tasks.getTaskList(), true));
                     break;
                 case "mark": {
-                    String targetIndexStr = currCommand.getArgs();
+                    String targetIndexStr = currCommand.args();
                     int targetIndex = Integer.parseInt(targetIndexStr) - 1;
                     Task targetTask = tasks.getTask(targetIndex);
                     targetTask.setDoneStatus(true);
@@ -55,7 +58,7 @@ public class JoeDuck {
                     break;
                 }
                 case "unmark": {
-                    String targetIndexStr = currCommand.getArgs();
+                    String targetIndexStr = currCommand.args();
                     int targetIndex = Integer.parseInt(targetIndexStr) - 1;
                     Task targetTask = tasks.getTask(targetIndex);
                     targetTask.setDoneStatus(false);
@@ -64,7 +67,7 @@ public class JoeDuck {
                     break;
                 }
                 case "delete", "remove": {
-                    String targetIndexStr = currCommand.getArgs();
+                    String targetIndexStr = currCommand.args();
                     int targetIndex = Integer.parseInt(targetIndexStr) - 1;
                     Task targetTask = tasks.getTask(targetIndex);
                     tasks.removeTask(targetIndex);
@@ -73,7 +76,7 @@ public class JoeDuck {
                     break;
                 }
                 case "todo":
-                    String todoString = currCommand.getArgs();
+                    String todoString = currCommand.args();
                     if (todoString.isEmpty()) {
                         throw new InvalidCommandException("Todo requires a description.");
                     }
@@ -83,7 +86,7 @@ public class JoeDuck {
                     storage.writeList(tasks.getTaskList());
                     break;
                 case "deadline": {
-                    String deadlineString = currCommand.getArgs();
+                    String deadlineString = currCommand.args();
                     String pattern = "(.+) /by (\\d{4}-\\d{2}-\\d{2}+) (\\d{2}:\\d{2})";
                     Pattern pd = Pattern.compile(pattern);
                     Matcher md = pd.matcher(deadlineString);
@@ -106,7 +109,7 @@ public class JoeDuck {
                     break;
                 }
                 case "event": {
-                    String deadlineString = currCommand.getArgs();
+                    String deadlineString = currCommand.args();
                     String pattern = "(.+) /from (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}) " +
                             "/to (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2})";
                     Pattern pe = Pattern.compile(pattern);

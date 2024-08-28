@@ -6,8 +6,19 @@ import joeduck.exception.InvalidCommandException;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+/**
+ * Handles raw input from the user.
+ * Transforms raw input into a Command.
+ */
 public class Parser {
     private final static Pattern COMMAND_PATTERN = Pattern.compile("([a-zA-Z]+)");
+
+    /**
+     * Parses a single line of raw user input.
+     * @param input String of the user's raw input.
+     * @return Command, representing the user's command and arguments.
+     * @throws InvalidCommandException Thrown when a non-alphabetical sequence is the first sequence.
+     */
     public Command parseUserInput(String input) throws InvalidCommandException {
         String currInput = input.trim();
         String currCommand = "";

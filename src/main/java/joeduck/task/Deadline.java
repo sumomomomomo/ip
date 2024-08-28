@@ -5,6 +5,9 @@ import joeduck.task.Task;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
+/**
+ * Represents a task with a single deadline.
+ */
 public class Deadline extends Task {
     private final LocalDateTime dueDate;
 

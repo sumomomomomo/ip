@@ -12,16 +12,16 @@ public class ParserTest {
     public void parseUserInput_validTodo_success() throws InvalidCommandException {
         String testInput = "todo asdf";
         Command res = new Parser().parseUserInput(testInput);
-        assertEquals("todo", res.getCommand());
-        assertEquals("asdf", res.getArgs());
+        assertEquals("todo", res.command());
+        assertEquals("asdf", res.args());
     }
 
     @Test
     public void parseUserInput_emptyTodo_success() throws InvalidCommandException {
         String testInput = "todo";
         Command res = new Parser().parseUserInput(testInput);
-        assertEquals("todo", res.getCommand());
-        assertEquals("", res.getArgs());
+        assertEquals("todo", res.command());
+        assertEquals("", res.args());
     }
 
     @Test
