@@ -1,3 +1,7 @@
+package joeduck.task;
+
+import joeduck.task.Task;
+
 import java.util.List;
 
 public class TaskList {

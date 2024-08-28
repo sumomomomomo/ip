@@ -1,3 +1,5 @@
+package joeduck.command;
+
 public class Command {
     private final String command;
     private final String args;

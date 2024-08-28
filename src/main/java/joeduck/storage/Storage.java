@@ -1,3 +1,12 @@
+package joeduck.storage;
+
+import joeduck.exception.StorageLoadException;
+import joeduck.task.Deadline;
+import joeduck.task.Event;
+import joeduck.task.Task;
+import joeduck.task.Todo;
+import joeduck.utils.Utils;
+
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;

@@ -2,23 +2,23 @@
 Welcome to Joe Duck
 ---
 ---
-Added Todo:
+Added joeduck.task.Todo:
 [T][ ] this by today
 ---
 ---
 Caught a joeduck pokemon:
-InvalidCommandException: akjslfdjaskfd
+joeduck.exception.InvalidCommandException: akjslfdjaskfd
 ---
 ---
 Caught a joeduck pokemon:
-EmptyTodoException: Your todoing description is empty, you buffoon
+joeduck.exception.EmptyTodoException: Your todoing description is empty, you buffoon
 ---
 ---
 Caught a joeduck pokemon:
-EmptyTodoException: Your todoing description is empty, you buffoon
+joeduck.exception.EmptyTodoException: Your todoing description is empty, you buffoon
 ---
 ---
-Added Deadline:
+Added joeduck.task.Deadline:
 [D][ ] that (by: now)
 ---
 ---
@@ -26,7 +26,7 @@ Added Deadline:
 2. [D][ ] that (by: now)
 ---
 ---
-Added Event:
+Added joeduck.task.Event:
 [E][ ] event desc from  (from: from to: to)
 ---
 ---

@@ -1,26 +1,27 @@
+package joeduck;
+
+import joeduck.command.Command;
+import joeduck.exception.InvalidCommandException;
+import joeduck.exception.JoeDuckException;
+import joeduck.exception.RegexMatchFailureException;
+import joeduck.exception.StorageLoadException;
+import joeduck.storage.Storage;
+import joeduck.task.*;
+import joeduck.parser.Parser;
+import joeduck.ui.Ui;
+import joeduck.utils.Utils;
+
 import java.io.FileNotFoundException;
-import java.io.PrintWriter;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Scanner;
 import java.util.regex.Pattern;
 import java.util.regex.Matcher;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.nio.file.Files;
-import java.io.File;
-import java.io.IOException;
-
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.time.temporal.ChronoUnit;
 
 public class JoeDuck {
     private final Ui ui;
-    private Storage storage;
-    private TaskList tasks;
+    private final Storage storage;
+    private final TaskList tasks;
     private final Parser parser;
 
     private JoeDuck() {

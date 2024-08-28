@@ -1,10 +1,14 @@
+package joeduck.task;
+
+import joeduck.task.Task;
+
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Deadline extends Task {
     private final LocalDateTime dueDate;
 
-    protected static final String DESC_REGEX_PATTERN = "^(.+) \\(by: (\\d{4}-\\d{2}-\\d{2}+) (\\d{2}:\\d{2})\\)$";
+    public static final String DESC_REGEX_PATTERN = "^(.+) \\(by: (\\d{4}-\\d{2}-\\d{2}+) (\\d{2}:\\d{2})\\)$";
     public Deadline(String description, LocalDateTime dueDate) {
         super(description);
         this.dueDate = dueDate;
