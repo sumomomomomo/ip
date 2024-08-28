@@ -1,3 +1,4 @@
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -24,7 +25,7 @@ public class JoeDuck {
         if (!Files.exists(dataFolderPath)) {
             dataFolderPath.toFile().mkdirs();
         }
-        Path dataFilePath = Paths.get(homePath, "ip_data", "tasks.json");
+        Path dataFilePath = Paths.get(homePath, "ip_data", "tasks.txt");
         if (Files.exists(dataFilePath)) {
             printResponse("tasks.json found!");
         } else {
@@ -36,10 +37,9 @@ public class JoeDuck {
             }
         }
 
-
         List<Task> inputs = new ArrayList<>();
+        boolean endSession = false;
 
-        label:
         while (scanner.hasNextLine()) {
             // TODO make special errors for every case :DDDD ?
             // TODO change to enum :DDDD ?
@@ -55,12 +55,16 @@ public class JoeDuck {
 
                 switch (currCommand) {
                     case "bye":
-                        break label;
+                        endSession = true;
+                        break;
                     case "list":
-                        printResponse(inputsToString(inputs));
+                        printResponse(inputsToString(inputs, true));
                         break;
                     case "write":
-                        printResponse(inputsToString(inputs));
+                        printResponse(inputsToString(inputs, false));
+                        try (PrintWriter out = new PrintWriter(dataFilePath.toString())) {
+                            out.println(inputsToString(inputs, false));
+                        }
                         break;
                     case "mark": {
                         String targetIndexStr = currInput.substring(5);
@@ -94,7 +98,6 @@ public class JoeDuck {
                         Todo t = new Todo(todoString);
                         inputs.add(t);
                         printResponse("Added Todo:\n" + t);
-
                         break;
                     case "deadline": {
                         String deadlineString = currInput.substring(9);
@@ -133,6 +136,10 @@ public class JoeDuck {
             } catch (Exception e) {
                 printError(e);
             }
+
+            if (endSession) {
+                break;
+            }
         }
         printResponse(EXIT_MESSAGE);
     }
@@ -151,11 +158,14 @@ public class JoeDuck {
         printResponse("Caught an unknown pokemon:\n" + e);
     }
 
-    private static String inputsToString(List<Task> list) {
+    private static String inputsToString(List<Task> list, boolean prependIndex) {
         StringBuilder ans = new StringBuilder();
         int count = 1;
         for (Task s : list) {
-            ans.append(count).append(". ").append(s);
+            if (prependIndex) {
+                ans.append(count).append(". ");
+            }
+            ans.append(s);
             if (count < list.size()) {
                 ans.append("\n");
             }
