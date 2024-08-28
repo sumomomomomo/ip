@@ -76,7 +76,7 @@ public class JoeDuck {
                     break;
                 }
                 case "find": {
-                    String keyword = currCommand.getArgs();
+                    String keyword = currCommand.args();
                     ui.printResponse(tasks.findTask(keyword));
                     break;
                 }
