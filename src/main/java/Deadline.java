@@ -1,13 +1,22 @@
-public class Deadline extends Task {
-    private final String dueDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
-    protected static final String REGEX_PATTERN = "^(.+) \\(by: (.+)\\)$";
-    public Deadline(String description, String dueDate) {
+public class Deadline extends Task {
+    private final LocalDateTime dueDate;
+
+    protected static final String DESC_REGEX_PATTERN = "^(.+) \\(by: (\\d{4}-\\d{2}-\\d{2}+) (\\d{2}:\\d{2})\\)$";
+    public Deadline(String description, LocalDateTime dueDate) {
         super(description);
         this.dueDate = dueDate;
     }
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " + dueDate + ")";
+        return "[D]" + super.toString() + " (by: " +
+                dueDate.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN_PRINT)) + ")";
+    }
+
+    public String toStringWrite() {
+        return "[D]" + super.toString() + " (by: " +
+                dueDate.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN_WRITE)) + ")";
     }
 }

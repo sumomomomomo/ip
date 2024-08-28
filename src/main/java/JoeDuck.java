@@ -1,5 +1,7 @@
 import java.io.FileNotFoundException;
 import java.io.PrintWriter;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Scanner;
@@ -34,6 +36,7 @@ public class JoeDuck {
         Path dataFolderPath = Paths.get(homePath, "ip_data");
         if (!Files.exists(dataFolderPath)) {
             dataFolderPath.toFile().mkdirs();
+            printResponse("Folder " + dataFolderPath + " created.");
         }
         Path dataFilePath = Paths.get(homePath, "ip_data", "tasks.txt");
         if (Files.exists(dataFilePath)) {
@@ -59,20 +62,40 @@ public class JoeDuck {
                             inputs.add(currTodo);
                             break;
                         case "D":
-                            Pattern pd = Pattern.compile(Deadline.REGEX_PATTERN);
+                            Pattern pd = Pattern.compile(Deadline.DESC_REGEX_PATTERN);
                             Matcher md = pd.matcher(descAndMisc);
                             md.find();
 
-                            Deadline currDeadline = new Deadline(md.group(1), md.group(2));
+                            String desc = md.group(1);
+                            String date = md.group(2);
+                            LocalDate localDate = LocalDate.parse(date);
+                            String time = md.group(3);
+                            LocalTime localTime = LocalTime.parse(time);
+                            LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
+
+                            Deadline currDeadline = new Deadline(desc, localDateTime);
                             currDeadline.setDoneStatus(doneStatus);
                             inputs.add(currDeadline);
                             break;
                         case "E":
-                            Pattern pe = Pattern.compile(Event.REGEX_PATTERN);
+                            Pattern pe = Pattern.compile(Event.DESC_REGEX_PATTERN);
                             Matcher me = pe.matcher(descAndMisc);
                             me.find();
 
-                            Event currEvent = new Event(me.group(1), me.group(2), me.group(3));
+                            String descE = me.group(1);
+                            String startDate = me.group(2);
+                            LocalDate d1 = LocalDate.parse(startDate);
+                            String startTime = me.group(3);
+                            LocalTime t1 = LocalTime.parse(startTime);
+                            String endDate = me.group(4);
+                            LocalDate d2 = LocalDate.parse(endDate);
+                            String endTime = me.group(5);
+                            LocalTime t2 = LocalTime.parse(endTime);
+
+                            LocalDateTime startDt = LocalDateTime.of(d1, t1);
+                            LocalDateTime endDt = LocalDateTime.of(d2, t2);
+
+                            Event currEvent = new Event(descE, startDt, endDt);
                             currEvent.setDoneStatus(doneStatus);
                             inputs.add(currEvent);
                             break;
@@ -87,6 +110,7 @@ public class JoeDuck {
         } else {
             try {
                 dataFilePath.toFile().createNewFile();
+                printResponse("File " + dataFilePath + " created.");
             } catch (IOException e) {
                 System.out.println("Exception: " + e);
                 return;
@@ -156,14 +180,20 @@ public class JoeDuck {
                         break;
                     case "deadline": {
                         String deadlineString = currInput.substring(9);
-                        String pattern = "(.+) /by (.+)";
+                        String pattern = "(.+) /by (\\d{4}-\\d{2}-\\d{2}+) (\\d{2}:\\d{2})";
                         Pattern p = Pattern.compile(pattern);
                         Matcher m = p.matcher(deadlineString);
                         m.find();
 
                         String desc = m.group(1);
-                        String deadlineDate = m.group(2);
-                        Deadline d = new Deadline(desc, deadlineDate);
+                        String date = m.group(2);
+                        LocalDate localDate = LocalDate.parse(date);
+
+                        String time = m.group(3);
+                        LocalTime localTime = LocalTime.parse(time);
+                        LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
+
+                        Deadline d = new Deadline(desc, localDateTime);
                         inputs.add(d);
                         printResponse("Added Deadline:\n" + d);
                         writeList(inputs, dataFilePath);
@@ -171,15 +201,25 @@ public class JoeDuck {
                     }
                     case "event": {
                         String deadlineString = currInput.substring(6);
-                        String pattern = "(.+) /from (.+) /to (.+)";
+                        String pattern = "(.+) /from (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}) " +
+                                "/to (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2})";
                         Pattern p = Pattern.compile(pattern);
                         Matcher m = p.matcher(deadlineString);
                         m.find();
 
                         String desc = m.group(1);
-                        String eventStartDate = m.group(2);
-                        String eventEndDate = m.group(3);
-                        Event e = new Event(desc, eventStartDate, eventEndDate);
+                        String startDate = m.group(2);
+                        LocalDate d1 = LocalDate.parse(startDate);
+                        String startTime = m.group(3);
+                        LocalTime t1 = LocalTime.parse(startTime);
+                        String endDate = m.group(4);
+                        LocalDate d2 = LocalDate.parse(endDate);
+                        String endTime = m.group(5);
+                        LocalTime t2 = LocalTime.parse(endTime);
+
+                        LocalDateTime startDt = LocalDateTime.of(d1, t1);
+                        LocalDateTime endDt = LocalDateTime.of(d2, t2);
+                        Event e = new Event(desc, startDt, endDt);
                         inputs.add(e);
                         printResponse("Added Event:\n" + e);
                         writeList(inputs, dataFilePath);
@@ -215,14 +255,15 @@ public class JoeDuck {
         printResponse("Caught an unknown pokemon:\n" + e);
     }
 
-    private static String inputsToString(List<Task> list, boolean forWriting) {
+    private static String inputsToString(List<Task> list, boolean forPrinting) {
         StringBuilder ans = new StringBuilder();
         int count = 1;
         for (Task s : list) {
-            if (forWriting) {
-                ans.append(count).append(". ");
+            if (forPrinting) {
+                ans.append(count).append(". ").append(s.toString());
+            } else {
+                ans.append(s.toStringWrite());
             }
-            ans.append(s);
             if (count < list.size()) {
                 ans.append("\n");
             }
