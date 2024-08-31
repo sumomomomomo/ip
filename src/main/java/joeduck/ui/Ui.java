@@ -6,7 +6,6 @@ import java.util.Scanner;
  * Handles user input/output.
  */
 public class Ui {
-    private static final String LINE_DIVIDER = "---";
     private static final String MOTD = "Welcome to Joe Duck";
     private static final String EXIT_MESSAGE = "Goodbye from Joe Duck";
 
@@ -15,14 +14,14 @@ public class Ui {
      */
     public final Scanner scanner = new Scanner(System.in);
 
-    public void printResponse(String res) {
-        System.out.println(LINE_DIVIDER);
+    public String printResponse(String res) {
         System.out.println(res);
-        System.out.println(LINE_DIVIDER);
+        return res;
     }
 
-    public void printError(String msg) {
+    public String printError(String msg) {
         printResponse("Error: " + msg);
+        return "Error: " + msg;
     }
 
     public boolean scannerHasNextLine() {
@@ -37,7 +36,8 @@ public class Ui {
         printResponse(MOTD);
     }
 
-    public void onExit() {
+    public String onExit() {
         printResponse(EXIT_MESSAGE);
+        return EXIT_MESSAGE;
     }
 }

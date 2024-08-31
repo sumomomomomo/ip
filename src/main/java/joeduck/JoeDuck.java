@@ -1,5 +1,6 @@
 package joeduck;
 
+import javafx.application.Platform;
 import joeduck.command.Command;
 import joeduck.exception.InvalidCommandException;
 import joeduck.exception.JoeDuckException;
@@ -8,26 +9,34 @@ import joeduck.exception.StorageLoadException;
 import joeduck.parser.Parser;
 import joeduck.storage.Storage;
 import joeduck.task.*;
+import joeduck.ui.MainWindow;
 import joeduck.ui.Ui;
 import joeduck.utils.Utils;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
+import javafx.scene.Scene;
+import javafx.scene.layout.AnchorPane;
+import javafx.stage.Stage;
+
 /**
  * Main class. Interactive chatbot.
  */
-public class JoeDuck {
+public class JoeDuck extends Application {
     private final Ui ui;
     private final Storage storage;
     private final TaskList tasks;
     private final Parser parser;
 
-    private JoeDuck() {
+    public JoeDuck() {
         ui = new Ui();
         storage = new Storage();
         parser = new Parser();
@@ -40,45 +49,41 @@ public class JoeDuck {
         }
     }
 
-    private boolean executeCommand(Command currCommand) {
+    private String executeCommand(Command currCommand) {
         try {
             switch (currCommand.command()) {
                 case "bye", "exit":
-                    return true;
+                    Platform.exit();
+                    return ui.onExit();
                 case "list":
-                    ui.printResponse(Utils.inputsToString(tasks.getTaskList(), true));
-                    break;
+                    return ui.printResponse(Utils.inputsToString(tasks.getTaskList(), true));
                 case "mark": {
                     String targetIndexStr = currCommand.args();
                     int targetIndex = Integer.parseInt(targetIndexStr) - 1;
                     Task targetTask = tasks.getTask(targetIndex);
                     targetTask.setDoneStatus(true);
-                    ui.printResponse("Marked " + targetTask);
                     storage.writeList(tasks.getTaskList());
-                    break;
+                    return ui.printResponse("Marked " + targetTask);
                 }
                 case "unmark": {
                     String targetIndexStr = currCommand.args();
                     int targetIndex = Integer.parseInt(targetIndexStr) - 1;
                     Task targetTask = tasks.getTask(targetIndex);
                     targetTask.setDoneStatus(false);
-                    ui.printResponse("Unmarked " + targetTask);
                     storage.writeList(tasks.getTaskList());
-                    break;
+                    return ui.printResponse("Unmarked " + targetTask);
                 }
                 case "delete", "remove": {
                     String targetIndexStr = currCommand.args();
                     int targetIndex = Integer.parseInt(targetIndexStr) - 1;
                     Task targetTask = tasks.getTask(targetIndex);
                     tasks.removeTask(targetIndex);
-                    ui.printResponse("Removed " + targetTask);
                     storage.writeList(tasks.getTaskList());
-                    break;
+                    return ui.printResponse("Removed " + targetTask);
                 }
                 case "find": {
                     String keyword = currCommand.args();
-                    ui.printResponse(tasks.findTask(keyword));
-                    break;
+                    return ui.printResponse(tasks.findTask(keyword));
                 }
                 case "todo":
                     String todoString = currCommand.args();
@@ -87,18 +92,16 @@ public class JoeDuck {
                     }
                     Todo t = new Todo(todoString);
                     tasks.addTask(t);
-                    ui.printResponse("Added Todo:\n" + t);
                     storage.writeList(tasks.getTaskList());
-                    break;
+                    return ui.printResponse("Added Todo:\n" + t);
                 case "deadline": {
                     String deadlineString = currCommand.args();
                     String pattern = "(.+) /by (\\d{4}-\\d{2}-\\d{2}+) (\\d{2}:\\d{2})";
                     Pattern pd = Pattern.compile(pattern);
                     Deadline d = getDeadline(pd, deadlineString);
                     tasks.addTask(d);
-                    ui.printResponse("Added Deadline:\n" + d);
                     storage.writeList(tasks.getTaskList());
-                    break;
+                    return ui.printResponse("Added Deadline:\n" + d);
                 }
                 case "event": {
                     String deadlineString = currCommand.args();
@@ -107,19 +110,17 @@ public class JoeDuck {
                     Pattern pe = Pattern.compile(pattern);
                     Event e = getEvent(pe, deadlineString);
                     tasks.addTask(e);
-                    ui.printResponse("Added Event:\n" + e);
                     storage.writeList(tasks.getTaskList());
-                    break;
+                    return ui.printResponse("Added Event:\n" + e);
                 }
                 default:
                     throw new InvalidCommandException("Invalid command!");
             }
         } catch (JoeDuckException e) {
-            ui.printError(e.getMessage());
+            return ui.printError(e.getMessage());
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
         }
-        return false;
     }
 
     private static Event getEvent(Pattern pe, String deadlineString) throws RegexMatchFailureException {
@@ -140,8 +141,7 @@ public class JoeDuck {
 
         LocalDateTime startDt = LocalDateTime.of(d1, t1);
         LocalDateTime endDt = LocalDateTime.of(d2, t2);
-        Event e = new Event(desc, startDt, endDt);
-        return e;
+        return new Event(desc, startDt, endDt);
     }
 
     private static Deadline getDeadline(Pattern pd, String deadlineString) throws RegexMatchFailureException {
@@ -158,25 +158,29 @@ public class JoeDuck {
         LocalTime localTime = LocalTime.parse(time);
         LocalDateTime localDateTime = LocalDateTime.of(localDate, localTime);
 
-        Deadline d = new Deadline(desc, localDateTime);
-        return d;
+        return new Deadline(desc, localDateTime);
     }
 
-    private void run() {
-        ui.onStart();
-        boolean endSession = false;
-        while (!endSession && ui.scannerHasNextLine()) {
-            try {
-                Command currCommand = parser.parseUserInput(ui.scannerNextLine());
-                endSession = executeCommand(currCommand);
-            } catch (InvalidCommandException e) {
-                ui.printError(e.getMessage());
-            }
+    @Override
+    public void start(Stage stage) {
+        try {
+            FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("/view/MainWindow.fxml"));
+            AnchorPane ap = fxmlLoader.load();
+            Scene scene = new Scene(ap);
+            stage.setScene(scene);
+            fxmlLoader.<MainWindow>getController().setJoeDuck(this);
+            stage.show();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
-        ui.onExit();
     }
 
-    public static void main(String[] args) {
-        new JoeDuck().run();
+    public String getResponse(String input) {
+        try {
+            Command currCommand = parser.parseUserInput(input);
+            return executeCommand(currCommand);
+        } catch (InvalidCommandException e) {
+            throw new RuntimeException(e);
+        }
     }
 }
