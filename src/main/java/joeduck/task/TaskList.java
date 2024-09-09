@@ -53,6 +53,14 @@ public class TaskList {
     }
 
     /**
+     * Removes a Task by the Task itself.
+     * @param task Task to be removed.
+     */
+    public void removeTask(Task task) {
+        tasks.remove(task);
+    }
+
+    /**
      * Returns a String of all tasks that match a given String keyword.
      * @param keyword Keyword to search.
      * @return String of each task, prepended with index, separated by newline.
@@ -68,13 +76,5 @@ public class TaskList {
             }
         }
         return ans.toString().trim();
-    }
-
-    /**
-     * Removes a Task by the Task itself.
-     * @param task Task to be removed.
-     */
-    public void removeTask(Task task) {
-        tasks.remove(task);
     }
 }

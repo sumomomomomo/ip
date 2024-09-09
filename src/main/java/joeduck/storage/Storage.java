@@ -1,14 +1,5 @@
 package joeduck.storage;
 
-import joeduck.exception.InvalidTaskTypeException;
-import joeduck.exception.RegexMatchFailureException;
-import joeduck.exception.StorageLoadException;
-import joeduck.task.Deadline;
-import joeduck.task.Event;
-import joeduck.task.Task;
-import joeduck.task.Todo;
-import joeduck.utils.Utils;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -24,6 +15,15 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import joeduck.exception.InvalidTaskTypeException;
+import joeduck.exception.RegexMatchFailureException;
+import joeduck.exception.StorageLoadException;
+import joeduck.task.Deadline;
+import joeduck.task.Event;
+import joeduck.task.Task;
+import joeduck.task.Todo;
+import joeduck.utils.Utils;
+
 /**
  * Handles I/O to a file for persistence of the list of tasks.
  */
@@ -34,6 +34,9 @@ public class Storage {
     private final Path dataFilePath;
     private final Pattern loadRegexPattern;
 
+    /**
+     * Creates a new Storage instance. Singleton.
+     */
     public Storage() {
         String homePath = System.getProperty("user.home");
         dataFolderPath = Paths.get(homePath, FILE_NAME);
@@ -62,21 +65,27 @@ public class Storage {
         String descAndMisc = m.group(3);
 
         switch (type) {
-            case "T":
-                Todo currTodo = new Todo(descAndMisc);
-                currTodo.setDoneStatus(doneStatus);
-                return currTodo;
-            case "D":
-                Pattern pd = Pattern.compile(Deadline.DESC_REGEX_PATTERN);
-                return getDeadline(pd, descAndMisc, doneStatus);
-            case "E":
-                Pattern pe = Pattern.compile(Event.DESC_REGEX_PATTERN);
-                return getEvent(pe, descAndMisc, doneStatus);
+        case "T": {
+            Todo currTodo = new Todo(descAndMisc);
+            currTodo.setDoneStatus(doneStatus);
+            return currTodo;
         }
-        throw new InvalidTaskTypeException("Unrecognized task type: " + type);
+        case "D": {
+            Pattern pd = Pattern.compile(Deadline.DESC_REGEX_PATTERN);
+            return getDeadline(pd, descAndMisc, doneStatus);
+        }
+        case "E": {
+            Pattern pe = Pattern.compile(Event.DESC_REGEX_PATTERN);
+            return getEvent(pe, descAndMisc, doneStatus);
+        }
+        default: {
+            throw new InvalidTaskTypeException("Unrecognized task type: " + type);
+        }
+        }
     }
 
-    private static Deadline getDeadline(Pattern pd, String descAndMisc, boolean doneStatus) throws RegexMatchFailureException {
+    private static Deadline getDeadline(Pattern pd, String descAndMisc, boolean doneStatus)
+            throws RegexMatchFailureException {
         Matcher md = pd.matcher(descAndMisc);
         if (!md.find()) {
             throw new RegexMatchFailureException("Error while parsing deadline: " + descAndMisc);
@@ -94,7 +103,8 @@ public class Storage {
         return currDeadline;
     }
 
-    private static Event getEvent(Pattern pe, String descAndMisc, boolean doneStatus) throws RegexMatchFailureException {
+    private static Event getEvent(Pattern pe, String descAndMisc, boolean doneStatus)
+            throws RegexMatchFailureException {
         Matcher me = pe.matcher(descAndMisc);
         if (!me.find()) {
             throw new RegexMatchFailureException("Error while parsing event: " + descAndMisc);
@@ -138,8 +148,8 @@ public class Storage {
                     inputs.add(getTaskFromLine(currLine));
                 }
                 s.close();
-            } catch (FileNotFoundException | InvalidTaskTypeException |
-                     RegexMatchFailureException e) {
+            } catch (FileNotFoundException | InvalidTaskTypeException
+                     | RegexMatchFailureException e) {
                 throw new RuntimeException(e);
             }
         } else {

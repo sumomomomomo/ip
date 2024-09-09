@@ -1,17 +1,17 @@
 package joeduck.parser;
 
-import joeduck.command.Command;
-import joeduck.exception.InvalidCommandException;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import joeduck.command.Command;
+import joeduck.exception.InvalidCommandException;
 
 /**
  * Handles raw input from the user.
  * Transforms raw input into a Command.
  */
 public class Parser {
-    private final static Pattern COMMAND_PATTERN = Pattern.compile("([a-zA-Z]+)");
+    private static final Pattern COMMAND_PATTERN = Pattern.compile("([a-zA-Z]+)");
 
     /**
      * Parses a single line of raw user input.

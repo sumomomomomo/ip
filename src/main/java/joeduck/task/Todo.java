@@ -1,7 +1,5 @@
 package joeduck.task;
 
-import joeduck.task.Task;
-
 /**
  * Represents a task with no fixed deadline or associated time period.
  */

@@ -1,8 +1,8 @@
 package joeduck.utils;
 
-import joeduck.task.Task;
-
 import java.util.List;
+
+import joeduck.task.Task;
 
 /**
  * Helper functions not specific to any other class.

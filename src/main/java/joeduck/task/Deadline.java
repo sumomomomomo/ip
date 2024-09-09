@@ -7,10 +7,12 @@ import java.time.format.DateTimeFormatter;
  * Represents a task with a single deadline.
  */
 public class Deadline extends Task {
+    public static final String DESC_REGEX_PATTERN = "^(.+) \\(by: (\\d{4}-\\d{2}-\\d{2}+) (\\d{2}:\\d{2})\\)$";
     private final LocalDateTime dueDate;
 
-    public static final String DESC_REGEX_PATTERN = "^(.+) \\(by: (\\d{4}-\\d{2}-\\d{2}+) (\\d{2}:\\d{2})\\)$";
-
+    /**
+     * Creates a Deadline.
+     */
     public Deadline(String description, LocalDateTime dueDate) {
         super(description);
         this.dueDate = dueDate;
@@ -22,6 +24,11 @@ public class Deadline extends Task {
                 + dueDate.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN_PRINT)) + ")";
     }
 
+    /**
+     * Returns the string representation of Deadline.
+     * For writing to tasks.txt.
+     * @return String representation of Deadline.
+     */
     public String toStringWrite() {
         return "[D]" + super.toString() + " (by: "
                 + dueDate.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN_WRITE)) + ")";

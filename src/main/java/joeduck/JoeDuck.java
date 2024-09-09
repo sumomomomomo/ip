@@ -1,18 +1,5 @@
 package joeduck;
 
-import javafx.application.Platform;
-import joeduck.command.Command;
-import joeduck.exception.InvalidCommandException;
-import joeduck.exception.JoeDuckException;
-import joeduck.exception.RegexMatchFailureException;
-import joeduck.exception.StorageLoadException;
-import joeduck.parser.Parser;
-import joeduck.storage.Storage;
-import joeduck.task.*;
-import joeduck.ui.MainWindow;
-import joeduck.ui.Ui;
-import joeduck.utils.Utils;
-
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
@@ -22,10 +9,26 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
 import javafx.scene.layout.AnchorPane;
 import javafx.stage.Stage;
+import joeduck.command.Command;
+import joeduck.exception.InvalidCommandException;
+import joeduck.exception.JoeDuckException;
+import joeduck.exception.RegexMatchFailureException;
+import joeduck.exception.StorageLoadException;
+import joeduck.parser.Parser;
+import joeduck.storage.Storage;
+import joeduck.task.Deadline;
+import joeduck.task.Event;
+import joeduck.task.Task;
+import joeduck.task.TaskList;
+import joeduck.task.Todo;
+import joeduck.ui.MainWindow;
+import joeduck.ui.Ui;
+import joeduck.utils.Utils;
 
 /**
  * Main class. Interactive chatbot.
@@ -36,6 +39,9 @@ public class JoeDuck extends Application {
     private final TaskList tasks;
     private final Parser parser;
 
+    /**
+     * Constructor for singleton JoeDuck. Represents the chatbot instance.
+     */
     public JoeDuck() {
         ui = new Ui();
         storage = new Storage();
@@ -108,8 +114,8 @@ public class JoeDuck extends Application {
             }
             case "event": {
                 String deadlineString = currCommand.args();
-                String pattern = "(.+) /from (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}) " +
-                        "/to (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2})";
+                String pattern = "(.+) /from (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}) "
+                        + "/to (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2})";
                 Pattern pe = Pattern.compile(pattern);
                 Event e = getEvent(pe, deadlineString);
                 tasks.addTask(e);

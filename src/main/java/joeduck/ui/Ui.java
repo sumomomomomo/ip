@@ -14,11 +14,23 @@ public class Ui {
      */
     public final Scanner scanner = new Scanner(System.in);
 
+    /**
+     * Prints the response, res.
+     * Returns a String for compatibility with JavaFX.
+     * @param res Response of JoeDuck.
+     * @return res
+     */
     public String printResponse(String res) {
         System.out.println(res);
         return res;
     }
 
+    /**
+     * Prints an error message.
+     * Returns a String for compatibility with JavaFX.
+     * @param msg Error message.
+     * @return res
+     */
     public String printError(String msg) {
         printResponse("Error: " + msg);
         return "Error: " + msg;
@@ -36,6 +48,11 @@ public class Ui {
         printResponse(MOTD);
     }
 
+    /**
+     * Prints a goodbye message on exit.
+     * Called on exit.
+     * @return The goodbye message.
+     */
     public String onExit() {
         printResponse(EXIT_MESSAGE);
         return EXIT_MESSAGE;

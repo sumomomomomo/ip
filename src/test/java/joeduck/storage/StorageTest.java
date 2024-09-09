@@ -1,14 +1,13 @@
 package joeduck.storage;
 
-import joeduck.task.Task;
-
-import joeduck.exception.InvalidTaskTypeException;
-import joeduck.exception.RegexMatchFailureException;
-import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.fail;
 
+import org.junit.jupiter.api.Test;
+
+import joeduck.exception.InvalidTaskTypeException;
+import joeduck.exception.RegexMatchFailureException;
+import joeduck.task.Task;
 public class StorageTest {
     @Test
     public void getTaskFromLine_validTodo_success() throws RegexMatchFailureException, InvalidTaskTypeException {
@@ -44,8 +43,8 @@ public class StorageTest {
             Task res = new Storage().getTaskFromLine(testInput);
             fail();
         } catch (Exception e) {
-            assertEquals("Text '2024-13-13' could not be parsed: Invalid value for MonthOfYear" +
-                    " (valid values 1 - 12): 13", e.getMessage());
+            assertEquals("Text '2024-13-13' could not be parsed: Invalid value for MonthOfYear"
+                    + " (valid values 1 - 12): 13", e.getMessage());
         }
     }
 
@@ -56,7 +55,7 @@ public class StorageTest {
             Task res = new Storage().getTaskFromLine(testInput);
             fail();
         } catch (Exception e) {
-            assertEquals("Error while parsing deadline: deasdfasdf (by: 2024-1-1 10:10)" , e.getMessage());
+            assertEquals("Error while parsing deadline: deasdfasdf (by: 2024-1-1 10:10)", e.getMessage());
         }
     }
 
@@ -67,8 +66,8 @@ public class StorageTest {
             Task res = new Storage().getTaskFromLine(testInput);
             fail();
         } catch (Exception e) {
-            assertEquals("Text '24:01' could not be parsed: Invalid value for HourOfDay " +
-                    "(valid values 0 - 23): 24" , e.getMessage());
+            assertEquals("Text '24:01' could not be parsed: Invalid value for HourOfDay "
+                    + "(valid values 0 - 23): 24", e.getMessage());
         }
     }
 
@@ -79,7 +78,7 @@ public class StorageTest {
             Task res = new Storage().getTaskFromLine(testInput);
             fail();
         } catch (Exception e) {
-            assertEquals("Error while parsing deadline: deasdfasdf (by: 2024-01-01 1232)" , e.getMessage());
+            assertEquals("Error while parsing deadline: deasdfasdf (by: 2024-01-01 1232)", e.getMessage());
         }
     }
 
@@ -121,8 +120,8 @@ public class StorageTest {
             Task res = new Storage().getTaskFromLine(testInput);
             fail();
         } catch (Exception e) {
-            assertEquals("Text '91:01' could not be parsed: Invalid value" +
-                            " for HourOfDay (valid values 0 - 23): 91", e.getMessage());
+            assertEquals("Text '91:01' could not be parsed: Invalid value"
+                    + " for HourOfDay (valid values 0 - 23): 91", e.getMessage());
         }
     }
 
@@ -133,8 +132,8 @@ public class StorageTest {
             Task res = new Storage().getTaskFromLine(testInput);
             fail();
         } catch (Exception e) {
-            assertEquals("Text '90:00' could not be parsed: Invalid value" +
-                    " for HourOfDay (valid values 0 - 23): 90", e.getMessage());
+            assertEquals("Text '90:00' could not be parsed: Invalid value"
+                    + " for HourOfDay (valid values 0 - 23): 90", e.getMessage());
         }
     }
 
@@ -145,8 +144,8 @@ public class StorageTest {
             Task res = new Storage().getTaskFromLine(testInput);
             fail();
         } catch (Exception e) {
-            assertEquals("Error while parsing event: my event (from: 2024-1-01 90:00 to:" +
-                    " 2024-10-10 11:01)", e.getMessage());
+            assertEquals("Error while parsing event: my event (from: 2024-1-01 90:00 to:"
+                    + " 2024-10-10 11:01)", e.getMessage());
         }
     }
 }
