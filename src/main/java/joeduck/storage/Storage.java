@@ -47,9 +47,10 @@ public class Storage {
     /**
      * Parses a single line from tasks.txt, and returns the Task it represents.
      * Made public for easier testing.
+     *
      * @param currLine String of the single line.
      * @return The Task it represents. Currently, they are: Todo, Deadline, Event
-     * @throws InvalidTaskTypeException Thrown when the line's task type is unrecognized.
+     * @throws InvalidTaskTypeException   Thrown when the line's task type is unrecognized.
      * @throws RegexMatchFailureException Thrown when regex fails when parsing Deadline or Event.
      */
     public Task getTaskFromLine(String currLine) throws InvalidTaskTypeException, RegexMatchFailureException {
@@ -131,6 +132,7 @@ public class Storage {
     /**
      * Reads tasks.txt, and returns a List of the tasks contained inside.
      * If tasks.txt does not exist, creates it and necessary directories.
+     *
      * @return A List of Task.
      * @throws StorageLoadException Thrown when tasks.txt does not exist, and creation fails.
      */
@@ -140,19 +142,7 @@ public class Storage {
             dataFolderPath.toFile().mkdirs();
         }
 
-        if (Files.exists(dataFilePath)) {
-            try {
-                Scanner s = new Scanner(dataFilePath.toFile());
-                while (s.hasNextLine()) {
-                    String currLine = s.nextLine().trim();
-                    inputs.add(getTaskFromLine(currLine));
-                }
-                s.close();
-            } catch (FileNotFoundException | InvalidTaskTypeException
-                     | RegexMatchFailureException e) {
-                throw new RuntimeException(e);
-            }
-        } else {
+        if (!Files.exists(dataFilePath)) {
             try {
                 if (!dataFilePath.toFile().createNewFile()) {
                     throw new IOException();
@@ -162,11 +152,24 @@ public class Storage {
             }
         }
 
+        try {
+            Scanner s = new Scanner(dataFilePath.toFile());
+            while (s.hasNextLine()) {
+                String currLine = s.nextLine().trim();
+                inputs.add(getTaskFromLine(currLine));
+            }
+            s.close();
+        } catch (FileNotFoundException | InvalidTaskTypeException
+                 | RegexMatchFailureException e) {
+            throw new RuntimeException(e);
+        }
+
         return inputs;
     }
 
     /**
      * Overrides tasks.txt with a given List of Task.
+     *
      * @param list List of Task to override tasks.txt with.
      * @throws FileNotFoundException Thrown when tasks.txt is not found.
      */

@@ -24,12 +24,7 @@ public class Deadline extends Task {
         return "[D]" + super.toString() + " (by: "
                 + dueDate.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN_PRINT)) + ")";
     }
-
-    /**
-     * Returns the string representation of Deadline.
-     * For writing to tasks.txt.
-     * @return String representation of Deadline.
-     */
+    @Override
     public String toStringWrite() {
         return "[D]" + super.toString() + " (by: "
                 + dueDate.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN_WRITE)) + ")";

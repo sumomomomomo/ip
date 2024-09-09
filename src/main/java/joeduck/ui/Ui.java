@@ -6,7 +6,6 @@ import java.util.Scanner;
  * Handles user input/output.
  */
 public class Ui {
-    private static final String MOTD = "Welcome to Joe Duck";
     private static final String EXIT_MESSAGE = "Goodbye from Joe Duck";
 
     /**
@@ -34,18 +33,6 @@ public class Ui {
     public String printError(String msg) {
         printResponse("Error: " + msg);
         return "Error: " + msg;
-    }
-
-    public boolean scannerHasNextLine() {
-        return scanner.hasNextLine();
-    }
-
-    public String scannerNextLine() {
-        return scanner.nextLine();
-    }
-
-    public void onStart() {
-        printResponse(MOTD);
     }
 
     /**

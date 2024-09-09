@@ -29,12 +29,7 @@ public class Event extends Task {
                 + startDate.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN_PRINT)) + " to: "
                 + endDate.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN_PRINT)) + ")";
     }
-
-    /**
-     * Returns the string representation of an Event.
-     * For writing to tasks.txt.
-     * @return String representation of the Event, for printing.
-     */
+    @Override
     public String toStringWrite() {
         return "[E]" + super.toString() + " (from: "
                 + startDate.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN_WRITE)) + " to: "
