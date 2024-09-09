@@ -1,5 +1,6 @@
 package joeduck.task;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -25,6 +26,14 @@ public class TaskList {
      */
     public List<Task> getTaskList() {
         return tasks;
+    }
+
+    /**
+     * Makes a copy of the current List of Task.
+     * @return Copy of current List of Task.
+     */
+    public List<Task> getTaskListCopy() {
+        return new ArrayList<>(tasks);
     }
 
     /**

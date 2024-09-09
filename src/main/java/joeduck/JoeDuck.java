@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -34,6 +36,7 @@ import joeduck.utils.Utils;
  * Main class. Interactive chatbot.
  */
 public class JoeDuck extends Application {
+    private static final List<String> SUPPORTED_MASS_COMMANDS = List.of("mark", "unmark", "remove", "delete");
     private final Ui ui;
     private final Storage storage;
     private final TaskList tasks;
@@ -117,11 +120,17 @@ public class JoeDuck extends Application {
                 storage.writeList(tasks.getTaskList());
                 return ui.printResponse("Added Event:\n" + e);
             }
+            case "mass": {
+                String massCommand = currCommand.args();
+                Command newCommand = parser.parseUserInput(massCommand);
+                return executeMassCommand(newCommand);
+            }
             default: {
                 throw new InvalidCommandException("Invalid command!");
             }
             }
-        } catch (JoeDuckException e) {
+        } catch (JoeDuckException | NumberFormatException | IndexOutOfBoundsException e) {
+            // TODO specially handle NumberFormatException and IndexOutOfBoundsException
             return ui.printError(e.getMessage());
         } catch (FileNotFoundException e) {
             throw new RuntimeException(e);
@@ -192,5 +201,30 @@ public class JoeDuck extends Application {
         } catch (InvalidCommandException e) {
             throw new RuntimeException(e);
         }
+    }
+    private String executeMassCommand(Command massCommand) {
+        if (!SUPPORTED_MASS_COMMANDS.contains(massCommand.command())) {
+            return ui.printError("Unsupported mass command: " + massCommand.command());
+        }
+        StringBuilder ans = new StringBuilder();
+        // special behaviour for remove
+        // TODO add checking that every number is valid
+        if (Objects.equals(massCommand.command(), "remove")
+                || Objects.equals(massCommand.command(), "delete")) {
+            List<Task> taskListCopy = tasks.getTaskListCopy();
+            for (String targetIndexStr : massCommand.args().split("\\s+")) {
+                int targetIndex = Integer.parseInt(targetIndexStr) - 1;
+                Task targetTask = taskListCopy.get(targetIndex);
+                tasks.removeTask(targetTask);
+                ans.append("Removed ").append(targetTask).append("\n");
+            }
+            return ans.toString().trim();
+        }
+
+        // behaviour for mark, unmark
+        for (String targetIndexStr : massCommand.args().split("\\s+")) {
+            ans.append(executeCommand(new Command(massCommand.command(), targetIndexStr))).append("\n");
+        }
+        return ans.toString().trim();
     }
 }
