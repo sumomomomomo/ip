@@ -52,69 +52,73 @@ public class JoeDuck extends Application {
     private String executeCommand(Command currCommand) {
         try {
             switch (currCommand.command()) {
-                case "bye", "exit":
-                    Platform.exit();
-                    return ui.onExit();
-                case "list":
-                    return ui.printResponse(Utils.inputsToString(tasks.getTaskList(), true));
-                case "mark": {
-                    String targetIndexStr = currCommand.args();
-                    int targetIndex = Integer.parseInt(targetIndexStr) - 1;
-                    Task targetTask = tasks.getTask(targetIndex);
-                    targetTask.setDoneStatus(true);
-                    storage.writeList(tasks.getTaskList());
-                    return ui.printResponse("Marked " + targetTask);
+            case "bye", "exit": {
+                Platform.exit();
+                return ui.onExit();
+            }
+            case "list": {
+                return ui.printResponse(Utils.inputsToString(tasks.getTaskList(), true));
+            }
+            case "mark": {
+                String targetIndexStr = currCommand.args();
+                int targetIndex = Integer.parseInt(targetIndexStr) - 1;
+                Task targetTask = tasks.getTask(targetIndex);
+                targetTask.setDoneStatus(true);
+                storage.writeList(tasks.getTaskList());
+                return ui.printResponse("Marked " + targetTask);
+            }
+            case "unmark": {
+                String targetIndexStr = currCommand.args();
+                int targetIndex = Integer.parseInt(targetIndexStr) - 1;
+                Task targetTask = tasks.getTask(targetIndex);
+                targetTask.setDoneStatus(false);
+                storage.writeList(tasks.getTaskList());
+                return ui.printResponse("Unmarked " + targetTask);
+            }
+            case "delete", "remove": {
+                String targetIndexStr = currCommand.args();
+                int targetIndex = Integer.parseInt(targetIndexStr) - 1;
+                Task targetTask = tasks.getTask(targetIndex);
+                tasks.removeTask(targetIndex);
+                storage.writeList(tasks.getTaskList());
+                return ui.printResponse("Removed " + targetTask);
+            }
+            case "find": {
+                String keyword = currCommand.args();
+                return ui.printResponse(tasks.findTask(keyword));
+            }
+            case "todo": {
+                String todoString = currCommand.args();
+                if (todoString.isEmpty()) {
+                    throw new InvalidCommandException("Todo requires a description.");
                 }
-                case "unmark": {
-                    String targetIndexStr = currCommand.args();
-                    int targetIndex = Integer.parseInt(targetIndexStr) - 1;
-                    Task targetTask = tasks.getTask(targetIndex);
-                    targetTask.setDoneStatus(false);
-                    storage.writeList(tasks.getTaskList());
-                    return ui.printResponse("Unmarked " + targetTask);
-                }
-                case "delete", "remove": {
-                    String targetIndexStr = currCommand.args();
-                    int targetIndex = Integer.parseInt(targetIndexStr) - 1;
-                    Task targetTask = tasks.getTask(targetIndex);
-                    tasks.removeTask(targetIndex);
-                    storage.writeList(tasks.getTaskList());
-                    return ui.printResponse("Removed " + targetTask);
-                }
-                case "find": {
-                    String keyword = currCommand.args();
-                    return ui.printResponse(tasks.findTask(keyword));
-                }
-                case "todo":
-                    String todoString = currCommand.args();
-                    if (todoString.isEmpty()) {
-                        throw new InvalidCommandException("Todo requires a description.");
-                    }
-                    Todo t = new Todo(todoString);
-                    tasks.addTask(t);
-                    storage.writeList(tasks.getTaskList());
-                    return ui.printResponse("Added Todo:\n" + t);
-                case "deadline": {
-                    String deadlineString = currCommand.args();
-                    String pattern = "(.+) /by (\\d{4}-\\d{2}-\\d{2}+) (\\d{2}:\\d{2})";
-                    Pattern pd = Pattern.compile(pattern);
-                    Deadline d = getDeadline(pd, deadlineString);
-                    tasks.addTask(d);
-                    storage.writeList(tasks.getTaskList());
-                    return ui.printResponse("Added Deadline:\n" + d);
-                }
-                case "event": {
-                    String deadlineString = currCommand.args();
-                    String pattern = "(.+) /from (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}) " +
-                            "/to (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2})";
-                    Pattern pe = Pattern.compile(pattern);
-                    Event e = getEvent(pe, deadlineString);
-                    tasks.addTask(e);
-                    storage.writeList(tasks.getTaskList());
-                    return ui.printResponse("Added Event:\n" + e);
-                }
-                default:
-                    throw new InvalidCommandException("Invalid command!");
+                Todo t = new Todo(todoString);
+                tasks.addTask(t);
+                storage.writeList(tasks.getTaskList());
+                return ui.printResponse("Added Todo:\n" + t);
+            }
+            case "deadline": {
+                String deadlineString = currCommand.args();
+                String pattern = "(.+) /by (\\d{4}-\\d{2}-\\d{2}+) (\\d{2}:\\d{2})";
+                Pattern pd = Pattern.compile(pattern);
+                Deadline d = getDeadline(pd, deadlineString);
+                tasks.addTask(d);
+                storage.writeList(tasks.getTaskList());
+                return ui.printResponse("Added Deadline:\n" + d);
+            }
+            case "event": {
+                String deadlineString = currCommand.args();
+                String pattern = "(.+) /from (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}) " +
+                        "/to (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2})";
+                Pattern pe = Pattern.compile(pattern);
+                Event e = getEvent(pe, deadlineString);
+                tasks.addTask(e);
+                storage.writeList(tasks.getTaskList());
+                return ui.printResponse("Added Event:\n" + e);
+            }
+            default: {
+                throw new InvalidCommandException("Invalid command!");
+            }
             }
         } catch (JoeDuckException e) {
             return ui.printError(e.getMessage());

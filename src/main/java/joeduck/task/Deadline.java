@@ -18,12 +18,12 @@ public class Deadline extends Task {
 
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " +
-                dueDate.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN_PRINT)) + ")";
+        return "[D]" + super.toString() + " (by: "
+                + dueDate.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN_PRINT)) + ")";
     }
 
     public String toStringWrite() {
-        return "[D]" + super.toString() + " (by: " +
-                dueDate.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN_WRITE)) + ")";
+        return "[D]" + super.toString() + " (by: "
+                + dueDate.format(DateTimeFormatter.ofPattern(DATE_TIME_PATTERN_WRITE)) + ")";
     }
 }
