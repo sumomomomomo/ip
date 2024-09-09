@@ -105,19 +105,14 @@ public class JoeDuck extends Application {
             }
             case "deadline": {
                 String deadlineString = currCommand.args();
-                String pattern = "(.+) /by (\\d{4}-\\d{2}-\\d{2}+) (\\d{2}:\\d{2})";
-                Pattern pd = Pattern.compile(pattern);
-                Deadline d = getDeadline(pd, deadlineString);
+                Deadline d = getDeadline(deadlineString);
                 tasks.addTask(d);
                 storage.writeList(tasks.getTaskList());
                 return ui.printResponse("Added Deadline:\n" + d);
             }
             case "event": {
                 String deadlineString = currCommand.args();
-                String pattern = "(.+) /from (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}) "
-                        + "/to (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2})";
-                Pattern pe = Pattern.compile(pattern);
-                Event e = getEvent(pe, deadlineString);
+                Event e = getEvent(deadlineString);
                 tasks.addTask(e);
                 storage.writeList(tasks.getTaskList());
                 return ui.printResponse("Added Event:\n" + e);
@@ -133,7 +128,10 @@ public class JoeDuck extends Application {
         }
     }
 
-    private static Event getEvent(Pattern pe, String deadlineString) throws RegexMatchFailureException {
+    private static Event getEvent(String deadlineString) throws RegexMatchFailureException {
+        String pattern = "(.+) /from (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2}) "
+                + "/to (\\d{4}-\\d{2}-\\d{2}) (\\d{2}:\\d{2})";
+        Pattern pe = Pattern.compile(pattern);
         Matcher me = pe.matcher(deadlineString);
         if (!me.find()) {
             throw new RegexMatchFailureException("Arguments for creating event is incorrect");
@@ -154,7 +152,9 @@ public class JoeDuck extends Application {
         return new Event(desc, startDt, endDt);
     }
 
-    private static Deadline getDeadline(Pattern pd, String deadlineString) throws RegexMatchFailureException {
+    private static Deadline getDeadline(String deadlineString) throws RegexMatchFailureException {
+        String pattern = "(.+) /by (\\d{4}-\\d{2}-\\d{2}+) (\\d{2}:\\d{2})";
+        Pattern pd = Pattern.compile(pattern);
         Matcher md = pd.matcher(deadlineString);
         if (!md.find()) {
             throw new RegexMatchFailureException("Arguments for creating deadline is incorrect");

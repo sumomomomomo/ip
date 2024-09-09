@@ -62,6 +62,8 @@ public class TaskList {
 
     /**
      * Returns a String of all tasks that match a given String keyword.
+     * Uses regex to match every instance of keyword.
+     * TODO: clean up keyword with special characters?
      * @param keyword Keyword to search.
      * @return String of each task, prepended with index, separated by newline.
      */

@@ -11,6 +11,7 @@ public abstract class Task {
     protected boolean isDone;
 
     protected Task(String description) {
+        assert !description.isEmpty();
         this.description = description;
         this.isDone = false;
     }
