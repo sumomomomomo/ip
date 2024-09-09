@@ -24,8 +24,8 @@ public class MainWindow extends AnchorPane {
 
     private JoeDuck joeDuck;
 
-    private Image userImage = new Image(this.getClass().getResourceAsStream("/images/Player.png"));
-    private Image dukeImage = new Image(this.getClass().getResourceAsStream("/images/GoblinLeader.png"));
+    private final Image userImage = new Image(this.getClass().getResourceAsStream("/images/Player.png"));
+    private final Image joeImage = new Image(this.getClass().getResourceAsStream("/images/GoblinLeader.png"));
 
     @FXML
     public void initialize() {
@@ -47,7 +47,7 @@ public class MainWindow extends AnchorPane {
         String response = joeDuck.getResponse(input);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getDukeDialog(response, dukeImage)
+                DialogBox.getDukeDialog(response, joeImage)
         );
         userInput.clear();
     }
