@@ -4,7 +4,7 @@
 
 Your Joe Duckish companion for keeping track of things to do. The goblin's name is Joe Duck.
 
-
+Saves/loads as commands are given to it. Save file location is `*user.home*/ip_data/tasks.txt`.
 
 # Task Creation
 
