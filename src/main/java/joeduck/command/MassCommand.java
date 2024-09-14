@@ -1,13 +1,16 @@
 package joeduck.command;
 
-import joeduck.JoeDuck;
-import joeduck.exception.InvalidCommandException;
-import joeduck.task.Task;
-
 import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Objects;
 
+import joeduck.JoeDuck;
+import joeduck.exception.InvalidCommandException;
+import joeduck.task.Task;
+
+/**
+ * Command for batch operations.
+ */
 public class MassCommand extends Command {
     private static final List<String> SUPPORTED_MASS_COMMANDS = List.of("mark", "unmark", "remove", "delete");
 
@@ -17,17 +20,18 @@ public class MassCommand extends Command {
 
     @Override
     public String execute(JoeDuck joeDuck) throws InvalidCommandException, FileNotFoundException {
-        Command newCommand = joeDuck.getParser().parseUserInput(getArgs());
-        return executeMassCommand(joeDuck, newCommand);
+        // First word of args of mass command is the new command
+        Command massCommand = joeDuck.getParser().parseUserInput(getArgs());
+        return executeMassCommand(joeDuck, massCommand);
     }
 
     private String executeMassCommand(JoeDuck joeDuck, Command massCommand) throws InvalidCommandException,
-            FileNotFoundException {
+            FileNotFoundException, IndexOutOfBoundsException {
         if (!SUPPORTED_MASS_COMMANDS.contains(massCommand.getCommand())) {
             throw new InvalidCommandException("Unsupported mass command: " + massCommand.getCommand());
         }
         StringBuilder ans = new StringBuilder();
-        // special behaviour for remove
+        // special behaviour for remove, so that batch remove is done by task itself instead of index
         // TODO add checking that every number is valid
         if (Objects.equals(massCommand.getCommand(), "remove")
                 || Objects.equals(massCommand.getCommand(), "delete")) {
@@ -58,6 +62,7 @@ public class MassCommand extends Command {
             }
             ans.append("\n");
         }
+
         return ans.toString().trim();
     }
 }

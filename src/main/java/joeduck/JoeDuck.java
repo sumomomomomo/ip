@@ -53,6 +53,12 @@ public class JoeDuck extends Application {
     public Parser getParser() {
         return parser;
     }
+
+    /**
+     * Parses user's input and executes inputted commands.
+     * @param input String input from User into the input box.
+     * @return String output from command execution.
+     */
     public String getResponse(String input) {
         Command currCommand = parser.parseUserInput(input);
         return executeCommand(currCommand);
@@ -61,7 +67,7 @@ public class JoeDuck extends Application {
     private String executeCommand(Command currCommand) {
         try {
             return currCommand.execute(this);
-        } catch (JoeDuckException | FileNotFoundException | NumberFormatException e) {
+        } catch (JoeDuckException | FileNotFoundException | NumberFormatException | IndexOutOfBoundsException e) {
             return ui.printError(e.getMessage());
         }
     }

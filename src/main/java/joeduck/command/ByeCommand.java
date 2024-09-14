@@ -3,6 +3,9 @@ package joeduck.command;
 import javafx.application.Platform;
 import joeduck.JoeDuck;
 
+/**
+ * Command to exit.
+ */
 public class ByeCommand extends Command {
     public ByeCommand(String args) {
         super("bye", args);
