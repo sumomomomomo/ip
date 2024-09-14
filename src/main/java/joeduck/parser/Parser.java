@@ -3,7 +3,7 @@ package joeduck.parser;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import joeduck.command.Command;
+import joeduck.command.*;
 import joeduck.exception.InvalidCommandException;
 
 /**
@@ -17,21 +17,31 @@ public class Parser {
      * Parses a single line of raw user input.
      * @param input String of the user's raw input.
      * @return Command, representing the user's command and arguments.
-     * @throws InvalidCommandException Thrown when a non-alphabetical sequence is the first sequence.
      */
-    public Command parseUserInput(String input) throws InvalidCommandException {
+    public Command parseUserInput(String input) {
         String currInput = input.trim();
-        String currCommand = "";
         Matcher mm = COMMAND_PATTERN.matcher(currInput);
-        if (mm.find()) {
-            currCommand = mm.group(1);
-            String args = "";
-            if (currCommand.length() < currInput.length()) {
-                args = currInput.substring(currCommand.length() + 1);
-            }
-            return new Command(currCommand, args);
-        } else {
-            throw new InvalidCommandException("Invalid command!");
+        if (!mm.find()) {
+            return new InvalidCommand("Invalid command!");
         }
+        String currCommand = mm.group(1);
+        String args = "";
+        if (currCommand.length() < currInput.length()) {
+            args = currInput.substring(currCommand.length() + 1);
+        }
+        return switch (currCommand) {
+        case "bye" -> new ByeCommand(args);
+        case "list" -> new ListCommand(args);
+        case "mark" -> new MarkCommand(args);
+        case "unmark" -> new UnmarkCommand(args);
+        case "delete", "remove" -> new DeleteCommand(args);
+        case "find" -> new FindCommand(args);
+        case "todo" -> new TodoCommand(args);
+        case "deadline" -> new DeadlineCommand(args);
+        case "event" -> new EventCommand(args);
+        case "mass" -> new MassCommand(args);
+        default -> new InvalidCommand(args);
+        };
     }
 }
+
