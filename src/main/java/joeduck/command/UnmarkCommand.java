@@ -15,11 +15,11 @@ public class UnmarkCommand extends Command {
 
     @Override
     public String execute(JoeDuck joeDuck) throws FileNotFoundException {
-        // Get entry
+        // Edit task
         int targetIndex = Integer.parseInt(getArgs()) - 1;
         Task targetTask = joeDuck.getTasks().getTask(targetIndex);
-        // Update storage
         targetTask.setDoneStatus(false);
+        // Update storage
         joeDuck.getStorage().writeList(joeDuck.getTasks().getTaskList());
         return joeDuck.getUi().printResponse("Unmarked " + targetTask);
     }

@@ -2,6 +2,7 @@ package joeduck;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.ArrayList;
 
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
@@ -21,24 +22,28 @@ import joeduck.ui.Ui;
  * Main class. Interactive chatbot.
  */
 public class JoeDuck extends Application {
+    private static final String TITLE_BAR_LABEL = "Joe Duck";
     private final Ui ui;
     private final Storage storage;
     private final TaskList tasks;
     private final Parser parser;
+    private boolean isStorageLoaded;
 
     /**
      * Constructor for singleton JoeDuck. Represents the chatbot instance.
      */
     public JoeDuck() {
-        ui = new Ui();
+        FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("/view/MainWindow.fxml"));
+        ui = new Ui(fxmlLoader);
         storage = new Storage();
         parser = new Parser();
+        tasks = new TaskList();
         try {
-            tasks = new TaskList();
             tasks.setTaskList(storage.getTasksFromFile());
+            isStorageLoaded = true;
         } catch (StorageLoadException e) {
-            // cry
-            throw new RuntimeException(e);
+            tasks.setTaskList(new ArrayList<>());
+            isStorageLoaded = false;
         }
     }
     public TaskList getTasks() {
@@ -72,15 +77,33 @@ public class JoeDuck extends Application {
         }
     }
 
+    /**
+     * Updates storage with current contents of TaskList.
+     * If storage failed to load initially, does nothing.
+     * @throws FileNotFoundException Thrown when storage fails to write.
+     */
+    public void updateStorage() throws FileNotFoundException {
+        if (!isStorageLoaded) {
+            return;
+        }
+        storage.writeList(tasks.getTaskList());
+    }
     @Override
     public void start(Stage stage) {
         try {
-            FXMLLoader fxmlLoader = new FXMLLoader(this.getClass().getResource("/view/MainWindow.fxml"));
-            AnchorPane ap = fxmlLoader.load();
+            AnchorPane ap = ui.getFxmlLoader().load();
             Scene scene = new Scene(ap);
             stage.setScene(scene);
-            fxmlLoader.<MainWindow>getController().setJoeDuck(this);
+            stage.setTitle(TITLE_BAR_LABEL);
+            ui.getFxmlLoader().<MainWindow>getController().setJoeDuck(this);
             stage.show();
+
+            if (isStorageLoaded) {
+                ui.displayResponse("Storage loaded successfully.");
+            } else {
+                ui.displayResponse("Failed to load storage.\nTask list is blank.\n"
+                        + "All commands will not save to storage.");
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }

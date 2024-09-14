@@ -1,17 +1,20 @@
 package joeduck.ui;
 
-import java.util.Scanner;
+import javafx.fxml.FXMLLoader;
 
 /**
  * Handles user input/output.
  */
 public class Ui {
     private static final String EXIT_MESSAGE = "Goodbye from Joe Duck";
+    private final FXMLLoader fxmlLoader;
+    public Ui(FXMLLoader fxmlLoader) {
+        this.fxmlLoader = fxmlLoader;
+    }
 
-    /**
-     * Scanner to be used with Singleton Ui instance in JoeDuck.
-     */
-    public final Scanner scanner = new Scanner(System.in);
+    public FXMLLoader getFxmlLoader() {
+        return fxmlLoader;
+    }
 
     /**
      * Prints the response, res.
@@ -43,5 +46,13 @@ public class Ui {
     public String onExit() {
         printResponse(EXIT_MESSAGE);
         return EXIT_MESSAGE;
+    }
+
+    /**
+     * Creates a dialog box for one-sided comments from Joe Duck.
+     * @param res Joe Duck's response.
+     */
+    public void displayResponse(String res) {
+        fxmlLoader.<MainWindow>getController().displayResponse(res);
     }
 }

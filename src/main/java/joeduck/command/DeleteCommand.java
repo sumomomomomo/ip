@@ -20,7 +20,7 @@ public class DeleteCommand extends Command {
         Task targetTask = joeDuck.getTasks().getTask(targetIndex);
         // Remove task and update storage
         joeDuck.getTasks().removeTask(targetIndex);
-        joeDuck.getStorage().writeList(joeDuck.getTasks().getTaskList());
+        joeDuck.updateStorage();
         return joeDuck.getUi().printResponse("Removed " + targetTask);
     }
 }

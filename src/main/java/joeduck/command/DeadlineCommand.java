@@ -23,7 +23,7 @@ public class DeadlineCommand extends Command {
     public String execute(JoeDuck joeDuck) throws RegexMatchFailureException, FileNotFoundException {
         Deadline d = getDeadline(getArgs());
         joeDuck.getTasks().addTask(d);
-        joeDuck.getStorage().writeList(joeDuck.getTasks().getTaskList());
+        joeDuck.updateStorage();
         return joeDuck.getUi().printResponse("Added Deadline:\n" + d);
     }
 

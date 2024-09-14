@@ -27,12 +27,12 @@ public class MassCommand extends Command {
 
     private String executeMassCommand(JoeDuck joeDuck, Command massCommand) throws InvalidCommandException,
             FileNotFoundException, IndexOutOfBoundsException {
+        // TODO add checking that every index provided is valid
         if (!SUPPORTED_MASS_COMMANDS.contains(massCommand.getCommand())) {
             throw new InvalidCommandException("Unsupported mass command: " + massCommand.getCommand());
         }
         StringBuilder ans = new StringBuilder();
         // special behaviour for remove, so that batch remove is done by task itself instead of index
-        // TODO add checking that every number is valid
         if (Objects.equals(massCommand.getCommand(), "remove")
                 || Objects.equals(massCommand.getCommand(), "delete")) {
             List<Task> taskListCopy = joeDuck.getTasks().getTaskListCopy();
@@ -42,6 +42,7 @@ public class MassCommand extends Command {
                 joeDuck.getTasks().removeTask(targetTask);
                 ans.append("Removed ").append(targetTask).append("\n");
             }
+            joeDuck.getStorage().writeList(joeDuck.getTasks().getTaskList());
             return ans.toString().trim();
         }
 

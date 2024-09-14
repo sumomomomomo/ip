@@ -15,12 +15,12 @@ public class MarkCommand extends Command {
 
     @Override
     public String execute(JoeDuck joeDuck) throws FileNotFoundException {
-        // Get entry
+        // Edit task
         int targetIndex = Integer.parseInt(getArgs()) - 1;
         Task targetTask = joeDuck.getTasks().getTask(targetIndex);
-        // Update storage
         targetTask.setDoneStatus(true);
-        joeDuck.getStorage().writeList(joeDuck.getTasks().getTaskList());
+        // Update storage
+        joeDuck.updateStorage();
         return joeDuck.getUi().printResponse("Marked " + targetTask);
     }
 }

@@ -28,7 +28,8 @@ import joeduck.utils.Utils;
  * Handles I/O to a file for persistence of the list of tasks.
  */
 public class Storage {
-    private static final String FILE_NAME = "ip_data";
+    private static final String FOLDER_NAME = "ip_data";
+    private static final String FILE_NAME = "tasks.txt";
     private static final String LOAD_REGEX_PATTERN = "^\\[(.)]\\[([ |X])] (.+)$";
     private final Path dataFolderPath;
     private final Path dataFilePath;
@@ -39,8 +40,8 @@ public class Storage {
      */
     public Storage() {
         String homePath = System.getProperty("user.home");
-        dataFolderPath = Paths.get(homePath, FILE_NAME);
-        dataFilePath = Paths.get(homePath, "ip_data", "tasks.txt");
+        dataFolderPath = Paths.get(homePath, FOLDER_NAME);
+        dataFilePath = Paths.get(homePath, FOLDER_NAME, FILE_NAME);
         loadRegexPattern = Pattern.compile(LOAD_REGEX_PATTERN);
     }
 
@@ -144,9 +145,7 @@ public class Storage {
 
         if (!Files.exists(dataFilePath)) {
             try {
-                if (!dataFilePath.toFile().createNewFile()) {
-                    throw new IOException();
-                }
+                dataFilePath.toFile().createNewFile();
             } catch (IOException e) {
                 throw new StorageLoadException("Failed to create a file for saving/loading.");
             }
@@ -156,14 +155,16 @@ public class Storage {
             Scanner s = new Scanner(dataFilePath.toFile());
             while (s.hasNextLine()) {
                 String currLine = s.nextLine().trim();
-                inputs.add(getTaskFromLine(currLine));
+                try {
+                    inputs.add(getTaskFromLine(currLine));
+                } catch (InvalidTaskTypeException | RegexMatchFailureException e) {
+                    System.out.println("Did not load " + e);
+                }
             }
             s.close();
-        } catch (FileNotFoundException | InvalidTaskTypeException
-                 | RegexMatchFailureException e) {
-            throw new RuntimeException(e);
+        } catch (FileNotFoundException e) {
+            throw new StorageLoadException("File not found for scanner.");
         }
-
         return inputs;
     }
 

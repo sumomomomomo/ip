@@ -47,8 +47,18 @@ public class MainWindow extends AnchorPane {
         String response = joeDuck.getResponse(input);
         dialogContainer.getChildren().addAll(
                 DialogBox.getUserDialog(input, userImage),
-                DialogBox.getDukeDialog(response, joeImage)
+                DialogBox.getJoeDuckDialog(response, joeImage)
         );
         userInput.clear();
+    }
+
+    /**
+     * Creates a dialog box for one-sided comments from Joe Duck.
+     * @param res Joe Duck's response.
+     */
+    public void displayResponse(String res) {
+        dialogContainer.getChildren().add(
+                DialogBox.getJoeDuckDialog(res, joeImage)
+        );
     }
 }

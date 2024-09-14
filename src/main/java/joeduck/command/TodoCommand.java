@@ -23,7 +23,7 @@ public class TodoCommand extends Command {
         Todo t = new Todo(getArgs());
         // Add task
         joeDuck.getTasks().addTask(t);
-        joeDuck.getStorage().writeList(joeDuck.getTasks().getTaskList());
+        joeDuck.updateStorage();
         return joeDuck.getUi().printResponse("Added Todo:\n" + t);
     }
 }

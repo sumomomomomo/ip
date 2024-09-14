@@ -23,7 +23,7 @@ public class EventCommand extends Command {
     public String execute(JoeDuck joeDuck) throws RegexMatchFailureException, FileNotFoundException {
         Event e = getEvent(getArgs());
         joeDuck.getTasks().addTask(e);
-        joeDuck.getStorage().writeList(joeDuck.getTasks().getTaskList());
+        joeDuck.updateStorage();
         return joeDuck.getUi().printResponse("Added Event:\n" + e);
     }
 
