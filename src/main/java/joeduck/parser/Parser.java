@@ -3,7 +3,17 @@ package joeduck.parser;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import joeduck.command.ByeCommand;
 import joeduck.command.Command;
+import joeduck.command.DeadlineCommand;
+import joeduck.command.DeleteCommand;
+import joeduck.command.EventCommand;
+import joeduck.command.FindCommand;
+import joeduck.command.ListCommand;
+import joeduck.command.MarkCommand;
+import joeduck.command.MassCommand;
+import joeduck.command.TodoCommand;
+import joeduck.command.UnmarkCommand;
 import joeduck.exception.InvalidCommandException;
 
 /**
@@ -21,15 +31,38 @@ public class Parser {
      */
     public Command parseUserInput(String input) throws InvalidCommandException {
         String currInput = input.trim();
-        String currCommand = "";
         Matcher mm = COMMAND_PATTERN.matcher(currInput);
         if (mm.find()) {
-            currCommand = mm.group(1);
+            String currCommand = mm.group(1);
             String args = "";
             if (currCommand.length() < currInput.length()) {
                 args = currInput.substring(currCommand.length() + 1);
             }
-            return new Command(currCommand, args);
+
+            switch (currCommand) {
+            case "bye":
+                return new ByeCommand(args);
+            case "list":
+                return new ListCommand(args);
+            case "mark":
+                return new MarkCommand(args);
+            case "unmark":
+                return new UnmarkCommand(args);
+            case "delete":
+                return new DeleteCommand(args);
+            case "find":
+                return new FindCommand(args);
+            case "todo":
+                return new TodoCommand(args);
+            case "deadline":
+                return new DeadlineCommand(args);
+            case "event":
+                return new EventCommand(args);
+            case "mass":
+                return new MassCommand(args);
+            default:
+                throw new InvalidCommandException("Invalid command!");
+            }
         } else {
             throw new InvalidCommandException("Invalid command!");
         }
