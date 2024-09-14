@@ -200,7 +200,7 @@ Exits the application.
 
 Batch operations on multiple tasks in a single command.
 
-Supported commands: `mark` `unmark` `delete`
+Supported commands: `mark` `unmark` `delete` `remove`
 
 ### Usage
 
