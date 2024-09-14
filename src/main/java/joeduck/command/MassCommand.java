@@ -4,6 +4,7 @@ import joeduck.JoeDuck;
 import joeduck.exception.InvalidCommandException;
 import joeduck.task.Task;
 
+import java.io.FileNotFoundException;
 import java.util.List;
 import java.util.Objects;
 
@@ -15,35 +16,48 @@ public class MassCommand extends Command {
     }
 
     @Override
-    public String execute(JoeDuck joeDuck) throws InvalidCommandException {
+    public String execute(JoeDuck joeDuck) throws InvalidCommandException, FileNotFoundException {
         Command newCommand = joeDuck.getParser().parseUserInput(getArgs());
-        return executeMassCommand(newCommand);
+        return executeMassCommand(joeDuck, newCommand);
     }
 
-    private String executeMassCommand(Command massCommand) {
-        return massCommand.getCommand();
-//        if (!SUPPORTED_MASS_COMMANDS.contains(massCommand.command())) {
-//            return ui.printError("Unsupported mass command: " + massCommand.command());
-//        }
-//        StringBuilder ans = new StringBuilder();
-//        // special behaviour for remove
-//        // TODO add checking that every number is valid
-//        if (Objects.equals(massCommand.command(), "remove")
-//                || Objects.equals(massCommand.command(), "delete")) {
-//            List<Task> taskListCopy = tasks.getTaskListCopy();
-//            for (String targetIndexStr : massCommand.args().split("\\s+")) {
-//                int targetIndex = Integer.parseInt(targetIndexStr) - 1;
-//                Task targetTask = taskListCopy.get(targetIndex);
-//                tasks.removeTask(targetTask);
-//                ans.append("Removed ").append(targetTask).append("\n");
-//            }
-//            return ans.toString().trim();
-//        }
-//
-//        // behaviour for mark, unmark
-//        for (String targetIndexStr : massCommand.args().split("\\s+")) {
-//            ans.append(executeCommand(new Command(massCommand.command(), targetIndexStr))).append("\n");
-//        }
-//        return ans.toString().trim();
+    private String executeMassCommand(JoeDuck joeDuck, Command massCommand) throws InvalidCommandException,
+            FileNotFoundException {
+        if (!SUPPORTED_MASS_COMMANDS.contains(massCommand.getCommand())) {
+            throw new InvalidCommandException("Unsupported mass command: " + massCommand.getCommand());
+        }
+        StringBuilder ans = new StringBuilder();
+        // special behaviour for remove
+        // TODO add checking that every number is valid
+        if (Objects.equals(massCommand.getCommand(), "remove")
+                || Objects.equals(massCommand.getCommand(), "delete")) {
+            List<Task> taskListCopy = joeDuck.getTasks().getTaskListCopy();
+            for (String targetIndexStr : massCommand.getArgs().split("\\s+")) {
+                int targetIndex = Integer.parseInt(targetIndexStr) - 1;
+                Task targetTask = taskListCopy.get(targetIndex);
+                joeDuck.getTasks().removeTask(targetTask);
+                ans.append("Removed ").append(targetTask).append("\n");
+            }
+            return ans.toString().trim();
+        }
+
+        // behaviour for mark, unmark
+        for (String targetIndexStr : massCommand.getArgs().split("\\s+")) {
+            switch (massCommand.getCommand()) {
+            case "mark": {
+                ans.append(new MarkCommand(targetIndexStr).execute(joeDuck));
+                break;
+            }
+            case "unmark": {
+                ans.append(new UnmarkCommand(targetIndexStr).execute(joeDuck));
+                break;
+            }
+            default: {
+                throw new RuntimeException("Default in MassCommand");
+            }
+            }
+            ans.append("\n");
+        }
+        return ans.toString().trim();
     }
 }

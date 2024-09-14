@@ -26,5 +26,6 @@ public abstract class Command {
         return args;
     }
 
-    public abstract String execute(JoeDuck joeDuck) throws InvalidCommandException, FileNotFoundException, RegexMatchFailureException;
+    public abstract String execute(JoeDuck joeDuck) throws InvalidCommandException,
+            FileNotFoundException, RegexMatchFailureException;
 }

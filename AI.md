@@ -1,6 +1,8 @@
 14/9/2024: Used AI to refactor JoeDuck's huge code block, and separate it into
 multiple separate Command classes.
 
+Goblin and Human portraits were created by Stable Diffusion as part of Orbital. Used PonyXL.
+
 Used https://huggingface.co/failspy/llama-3-70B-Instruct-abliterated in Q4 GGUF quant, 
 run locally on 2x Tesla P40 with llama.cpp backend and Ollama frontend.
 
