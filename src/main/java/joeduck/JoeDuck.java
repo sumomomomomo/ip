@@ -23,6 +23,11 @@ import joeduck.ui.Ui;
  */
 public class JoeDuck extends Application {
     private static final String TITLE_BAR_LABEL = "Joe Duck";
+    private static final String STORAGE_SUCCESS_RES = "Storage linked successfully.";
+    private static final String STORAGE_FAIL_RES = """
+            Failed to load storage.
+            Task list is blank.
+            All commands will not save to storage.""";
     private final Ui ui;
     private final Storage storage;
     private final TaskList tasks;
@@ -99,10 +104,9 @@ public class JoeDuck extends Application {
             stage.show();
 
             if (isStorageLoaded) {
-                ui.displayResponse("Storage loaded successfully.");
+                ui.displayResponse(STORAGE_SUCCESS_RES);
             } else {
-                ui.displayResponse("Failed to load storage.\nTask list is blank.\n"
-                        + "All commands will not save to storage.");
+                ui.displayResponse(STORAGE_FAIL_RES);
             }
         } catch (IOException e) {
             e.printStackTrace();
