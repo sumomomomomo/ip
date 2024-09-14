@@ -14,6 +14,7 @@ public class TaskList {
 
     /**
      * Overrides the current List of Task.
+     *
      * @param tasks New List of Task.
      */
     public void setTaskList(List<Task> tasks) {
@@ -22,6 +23,7 @@ public class TaskList {
 
     /**
      * Gets the current List of Task.
+     *
      * @return Current List of Task.
      */
     public List<Task> getTaskList() {
@@ -30,6 +32,7 @@ public class TaskList {
 
     /**
      * Makes a copy of the current List of Task.
+     *
      * @return Copy of current List of Task.
      */
     public List<Task> getTaskListCopy() {
@@ -38,6 +41,7 @@ public class TaskList {
 
     /**
      * Gets a certain Task by index.
+     *
      * @param index Index of the Task.
      * @return The Task.
      */
@@ -47,6 +51,7 @@ public class TaskList {
 
     /**
      * Adds a Task.
+     *
      * @param task The Task to be added.
      */
     public void addTask(Task task) {
@@ -55,6 +60,7 @@ public class TaskList {
 
     /**
      * Removes a Task by index.
+     *
      * @param index Index of the Task to be removed.
      */
     public void removeTask(int index) {
@@ -63,6 +69,7 @@ public class TaskList {
 
     /**
      * Removes a Task by the Task itself.
+     *
      * @param task Task to be removed.
      */
     public void removeTask(Task task) {
@@ -73,6 +80,7 @@ public class TaskList {
      * Returns a String of all tasks that match a given String keyword.
      * Uses regex to match every instance of keyword.
      * TODO: clean up keyword with special characters?
+     *
      * @param keyword Keyword to search.
      * @return String of each task, prepended with index, separated by newline.
      */

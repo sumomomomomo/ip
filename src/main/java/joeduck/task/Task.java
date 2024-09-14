@@ -18,6 +18,7 @@ public abstract class Task {
 
     /**
      * Sets the internal done boolean.
+     *
      * @param s Doneness.
      */
     public void setDoneStatus(boolean s) {
@@ -26,6 +27,7 @@ public abstract class Task {
 
     /**
      * Gets the string representing doneness if done, or a single space if not.
+     *
      * @return String representing doneness.
      */
     public String getStatusIcon() {
@@ -39,6 +41,7 @@ public abstract class Task {
 
     /**
      * Used for writing to tasks.txt.
+     *
      * @return String representation of the Task.
      */
     public abstract String toStringWrite();

@@ -19,6 +19,7 @@ public class Ui {
     /**
      * Prints the response, res.
      * Returns a String for compatibility with JavaFX.
+     *
      * @param res Response of JoeDuck.
      * @return res
      */
@@ -30,6 +31,7 @@ public class Ui {
     /**
      * Prints an error message.
      * Returns a String for compatibility with JavaFX.
+     *
      * @param msg Error message.
      * @return res
      */
@@ -41,6 +43,7 @@ public class Ui {
     /**
      * Prints a goodbye message on exit.
      * Called on exit.
+     *
      * @return The goodbye message.
      */
     public String onExit() {
@@ -50,6 +53,7 @@ public class Ui {
 
     /**
      * Creates a dialog box for one-sided comments from Joe Duck.
+     *
      * @param res Joe Duck's response.
      */
     public void displayResponse(String res) {

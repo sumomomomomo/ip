@@ -25,6 +25,7 @@ public class Parser {
 
     /**
      * Parses a single line of raw user input.
+     *
      * @param input String of the user's raw input.
      * @return Command, representing the user's command and arguments.
      */

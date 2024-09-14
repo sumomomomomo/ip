@@ -66,6 +66,7 @@ public class JoeDuck extends Application {
 
     /**
      * Parses user's input and executes inputted commands.
+     *
      * @param input String input from User into the input box.
      * @return String output from command execution.
      */
@@ -85,6 +86,7 @@ public class JoeDuck extends Application {
     /**
      * Updates storage with current contents of TaskList.
      * If storage failed to load initially, does nothing.
+     *
      * @throws FileNotFoundException Thrown when storage fails to write.
      */
     public void updateStorage() throws FileNotFoundException {

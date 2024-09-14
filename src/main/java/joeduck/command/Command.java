@@ -13,7 +13,8 @@ public abstract class Command {
     protected final String args;
 
     /**
-     * Create a new Command.
+     * Initializes a new Command.
+     *
      * @param command Command's unique String identifier. Set by specific commands.
      * @param args All inputs after command.
      */
@@ -31,7 +32,8 @@ public abstract class Command {
     }
 
     /**
-     * Called by JoeDuck.
+     * Executes this Command.
+     *
      * @param joeDuck Main JoeDuck instance.
      * @return String representing result of the command.
      * @throws InvalidCommandException Thrown when the command is malformed.
